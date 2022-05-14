@@ -1,0 +1,56 @@
+{
+    "name": "acuapesca-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc",
+        "dev": "nodemon src/index.ts --exec ts-node",
+        "start": "node dist/index.js",
+        "route": "python fichero.py",
+        "class": "python class.py",
+        "interface": "python interface.py"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aaron-0406/acuapesca-backend.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/aaron-0406/acuapesca-backend/issues"
+    },
+    "homepage": "https://github.com/aaron-0406/acuapesca-backend#readme",
+    "dependencies": {
+        "@hapi/boom": "^10.0.0",
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.1",
+        "express": "^4.18.1",
+        "fs-extra": "^10.1.0",
+        "jsonwebtoken": "^8.5.1",
+        "morgan": "^1.10.0",
+        "multer": "^1.4.4",
+        "mysql2": "^2.3.3",
+        "passport": "^0.5.2",
+        "passport-jwt": "^4.0.0",
+        "passport-local": "^1.0.0"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^2.4.2",
+        "@types/cors": "^2.8.12",
+        "@types/express": "^4.17.13",
+        "@types/fs-extra": "^9.0.13",
+        "@types/jsonwebtoken": "^8.5.8",
+        "@types/morgan": "^1.9.3",
+        "@types/multer": "^1.4.7",
+        "@types/mysql2": "github:types/mysql2",
+        "@types/passport": "^1.0.7",
+        "@types/passport-jwt": "^3.0.6",
+        "@types/passport-local": "^1.0.34",
+        "nodemon": "^2.0.16",
+        "typescript": "^4.6.4"
+    }
+}

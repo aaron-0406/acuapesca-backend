@@ -1,0 +1,6 @@
+node_modules
+.env
+fichero.py
+class.py
+interface.py
+consulta.sql
