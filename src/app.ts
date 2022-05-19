@@ -52,7 +52,7 @@ export class App {
     this.app.use(express.static(path.join(__dirname, "/public/build")));
   }
   routes() {
-    this.app.use('/api/v0/auth/', AuthRouter);
+    this.app.use('/api/v1/auth/', AuthRouter);
     this.app.use(IndexRoutes);
   }
 

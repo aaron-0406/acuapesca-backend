@@ -5,7 +5,7 @@ export async function connect() {
   const connection = await createPool({
     host: config.host,
     user: config.user,
-    // password:process.env.BD_PASSWORD,
+    password:config.password,
     database: config.database,
     port: config.port,
     connectionLimit: 10,
@@ -16,7 +16,7 @@ export async function connect() {
 export const database = {
   host: config.host,
   user: config.user,
-  // password:process.env.BD_PASSWORD,
+  password:config.password,
   database: config.database,
   port: config.port,
   connectionLimit: 10,
