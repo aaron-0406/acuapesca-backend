@@ -35,7 +35,7 @@ passport.use(
         if (!verification.validation) done(verification.message, false);
 
         if (verification.validation) {
-          const newUser: IUser = await ClsUsuario.getUser(email);
+          const newUser: IUser = await ClsUsuario.getUserByEmail(email);
           done(null, newUser);
         }
       } catch (error) {

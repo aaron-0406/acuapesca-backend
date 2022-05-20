@@ -16,7 +16,7 @@ class ClsUsuario {
   /*
     Description: This method validate Data Structure of User
   */
-  validateUserData(req: Request): IValidation {
+  validateUserData(req: Request, mode: string): IValidation {
     const { name, lastname, email, dni, id_rango, address, status, password } = req.body;
     if (!name) return { message: "Falta el campo 'name'", validation: false };
     if (!lastname) return { message: "Falta el campo 'lastname'", validation: false };
@@ -25,14 +25,16 @@ class ClsUsuario {
     if (!id_rango) return { message: "Falta el campo 'id_rango'", validation: false };
     if (!address) return { message: "Falta el campo 'address'", validation: false };
     if (!status) return { message: "Falta el campo 'status'", validation: false };
-    if (!password) return { message: "Falta el campo 'password'", validation: false };
+    if (mode === "Create") {
+      if (!password) return { message: "Falta el campo 'password'", validation: false };
+    }
 
     const validationEmail = ClsExpR.validarCorreo(email);
     const validationName = ClsExpR.validarNombre(name);
     const validationLastname = ClsExpR.validarNombre(lastname);
     const validationDni = ClsExpR.validarLength(dni, 8);
-    const validationPassword = ClsExpR.validarRequired(password);
-
+    let validationPassword = { message: "Ok", validation: true };
+    if (mode === "Create") validationPassword = ClsExpR.validarRequired(password);
     if (!validationEmail.validation) return { message: `${validationEmail.message} (email)`, validation: false };
     if (!validationName.validation) return { message: `${validationEmail.message} (name)`, validation: false };
     if (!validationLastname.validation) return { message: `${validationEmail.message} (lastname)`, validation: false };
@@ -88,46 +90,82 @@ class ClsUsuario {
   /*
       Description: This method get an user by email
   */
-  async getUser(email: string): Promise<IUser> {
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER`(?)", [email]);
-    const usuario = data[0][0][0];
-    const newUsuario: IUser = {
-      id: usuario.id,
-      name: usuario.name,
-      lastname: usuario.lastname,
-      email: usuario.email,
-      status: usuario.status === 1,
-      id_rango: usuario.id_rango,
-      rango: usuario.rango,
-      dni: usuario.dni,
-      address: usuario.address,
-      photo: usuario.photo,
+  async getUserByEmail(email: string): Promise<IUser> {
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER_BY_EMAIL`(?)", [email]);
+    const user = data[0][0][0];
+    const newUser: IUser = {
+      id: user.id,
+      name: user.name,
+      lastname: user.lastname,
+      email: user.email,
+      status: user.status === 1,
+      id_rango: user.id_rango,
+      rango: user.rango,
+      dni: user.dni,
+      address: user.address,
+      photo: user.photo,
     };
-    return newUsuario;
+    return newUser;
+  }
+  /*
+      Description: This method get an user by id
+  */
+  async getUserById(id: string): Promise<IUser> {
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER_BY_ID`(?)", [id]);
+    const user = data[0][0][0];
+    const newUser: IUser = {
+      id: user.id,
+      name: user.name,
+      lastname: user.lastname,
+      email: user.email,
+      status: user.status === 1,
+      id_rango: user.id_rango,
+      rango: user.rango,
+      dni: user.dni,
+      address: user.address,
+      photo: user.photo,
+    };
+    return newUser;
   }
 
-  // async editarEstudiante(id: number, correo: string) {
-  //   const conn = await connect();
-  //   await conn.query("CALL `SP_UPDATE_STUDENT`(?,?,?,?,?,?,?,?,?)", [this.name, this.lastname, correo, this.dni, id]);
-  //   await conn.end();
-  // }
+  async editUser(id: number, status: boolean, email: string, password: string, dni: string, name: string, lastname: string, address: string, id_rango: number, photo: string): Promise<IUser> {
+    await ClsBDConexion.conn.query("CALL `SP_UPDATE_USER`(?,?,?,?,?,?,?,?,?,?)", [id, name, lastname, email, password, status ? 1 : 0, id_rango, dni, address, photo]);
+    const resRango: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_RANGO_BY_ID`(?)", [id_rango]);
+    const rangoNombre = resRango[0][0][0];
+    const newUser: IUser = {
+      id,
+      name,
+      lastname,
+      email,
+      status,
+      id_rango,
+      rango: rangoNombre.Rango,
+      dni: dni,
+      address,
+      photo,
+    };
+    return newUser;
+  }
 
   /*
       Description: This method get users
   */
   async getUsers(pagina?: string, filtro?: string): Promise<{ users: RowDataPacket[]; quantity: number }> {
-    const conn = await connect();
     pagina = pagina === undefined || pagina === "" ? "-1" : pagina;
     filtro = filtro === undefined ? "-1" : filtro;
     let quantity: number = 0;
     const cantidadDatos = 20;
     const page = (parseInt(pagina) - 1) * cantidadDatos;
-    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query("CALL `SP_GET_USERS`(?,?)", [cantidadDatos * parseInt(pagina), filtro]);
-    await conn.end();
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USERS`(?,?)", [cantidadDatos * parseInt(pagina), filtro]);
     quantity = data[0][1][0].Cantidad;
     if (pagina === "-1") return { users: data[0][0], quantity }; //Todo el resultado
     const users = data[0][0].splice(page, cantidadDatos); //Separado por paginas
     return { users, quantity };
+  }
+
+  async getPhotoByUserId(id: number) {
+    const data: [any[]] = await ClsBDConexion.conn.query("SELECT Dato_Alfanum as 'photo' FROM Dato WHERE Campo_Id = 7 AND Persona_Id = ?", [id]);
+    return data[0][0].photo;
   }
 }
 export default new ClsUsuario();
