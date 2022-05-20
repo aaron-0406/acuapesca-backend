@@ -112,6 +112,9 @@ class ClsUsuario {
   //   await conn.end();
   // }
 
+  /*
+      Description: This method get users
+  */
   async getUsers(pagina?: string, filtro?: string): Promise<{ users: RowDataPacket[]; quantity: number }> {
     const conn = await connect();
     pagina = pagina === undefined || pagina === "" ? "-1" : pagina;
