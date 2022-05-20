@@ -85,8 +85,11 @@ class ClsUsuario {
     return usuario;
   }
 
-  async getUser(correo: string): Promise<IUser> {
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER`(?)", [correo]);
+  /*
+      Description: This method get an user by email
+  */
+  async getUser(email: string): Promise<IUser> {
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER`(?)", [email]);
     const usuario = data[0][0][0];
     const newUsuario: IUser = {
       id: usuario.id,
@@ -109,19 +112,19 @@ class ClsUsuario {
   //   await conn.end();
   // }
 
-  async getEstudiantes(pagina?: string, filtro?: string) {
+  async getUsers(pagina?: string, filtro?: string): Promise<{ users: RowDataPacket[]; quantity: number }> {
     const conn = await connect();
     pagina = pagina === undefined || pagina === "" ? "-1" : pagina;
     filtro = filtro === undefined ? "-1" : filtro;
-    let cantidad: number = 0;
-    const cantidadDatos = 12;
+    let quantity: number = 0;
+    const cantidadDatos = 20;
     const page = (parseInt(pagina) - 1) * cantidadDatos;
-    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query("CALL `SP_GET_STUDENTS`(?,?)", [cantidadDatos * parseInt(pagina), filtro]);
+    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query("CALL `SP_GET_USERS`(?,?)", [cantidadDatos * parseInt(pagina), filtro]);
     await conn.end();
-    cantidad = data[0][1][0].Cantidad;
-    if (pagina === "-1") return { estudiantes: data[0][0], cantidad }; //Todo el resultado
-    const estudiantes = data[0][0].splice(page, cantidadDatos); //Separado por paginas
-    return { estudiantes, cantidad };
+    quantity = data[0][1][0].Cantidad;
+    if (pagina === "-1") return { users: data[0][0], quantity }; //Todo el resultado
+    const users = data[0][0].splice(page, cantidadDatos); //Separado por paginas
+    return { users, quantity };
   }
 }
 export default new ClsUsuario();

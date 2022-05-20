@@ -1,6 +1,6 @@
 import { NextFunction, Router, Request, Response } from "express";
 import { checkRoles, JWTAuth } from "../lib/auth.handler";
-import { createUser } from "../controllers/user.controller";
+import { createUser, getUsers } from "../controllers/user.controller";
 import { fotosPerfil } from "..//lib/multer";
 import fs from "fs-extra";
 import path from "path";
@@ -32,5 +32,6 @@ const multerFoto = (req: Request, res: Response, next: NextFunction) => {
 
 // Create User Route
 router.post("/", JWTAuth, checkRoles("Administrador"), multerFoto, validateData, createUser);
+router.get("/", JWTAuth, checkRoles("Administrador"), getUsers);
 
 export default router;
