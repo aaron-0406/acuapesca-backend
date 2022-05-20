@@ -17,9 +17,9 @@ declare global {
   namespace Express {
     interface User {
       rango: string;
-      correo: string;
+      email: string;
       id: string;
-      foto: string;
+      photo: string;
     }
   }
 }

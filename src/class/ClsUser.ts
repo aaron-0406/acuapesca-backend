@@ -42,6 +42,25 @@ class ClsUsuario {
   }
 
   /*
+    Description: This method validate Data Structure of Reset PWD Request
+  */
+  validateResetPWDData(req: Request): IValidation {
+    const { oldPassword, newPassword, repeatPassword } = req.body;
+    if (!oldPassword) return { message: "Falta el campo 'oldPassword'", validation: false };
+    if (!newPassword) return { message: "Falta el campo 'newPassword'", validation: false };
+    if (!repeatPassword) return { message: "Falta el campo 'repeatPassword'", validation: false };
+
+    const validationOldPassword = ClsExpR.validarRequired(oldPassword);
+    const validationNewPassword = ClsExpR.validarRequired(newPassword);
+    const validationRepeatPassword = ClsExpR.validarRequired(repeatPassword);
+
+    if (!validationOldPassword.validation) return { message: `${validationOldPassword.message} (oldPassword)`, validation: false };
+    if (!validationNewPassword.validation) return { message: `${validationNewPassword.message} (newPassword)`, validation: false };
+    if (!validationRepeatPassword.validation) return { message: `${validationRepeatPassword.message} (repeatPassword)`, validation: false };
+    return { message: "Ok", validation: true };
+  }
+
+  /*
       Description: This method create a new user
   */
   async createUser(status: boolean, email: string, password: string, dni: string, name: string, lastname: string, address: string, id_rango: number, photo: string): Promise<IUser> {

@@ -40,24 +40,30 @@ class ClsPerson {
   }
 
   async changePassword(oldPassword: string, newPassword: string, repeatPassword: string, email?: string) {
+    //Verfiying if the password is equal to repeatPassword
     if (newPassword !== repeatPassword) return { error: "La nueva contraseña no coincide con la repetida" };
-    const conn = await connect();
-    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query("CALL `SP_GET_PERSON`(?)", [email]);
-    const usuario = data[0][0][0];
-    if (!(await matchPassword(oldPassword, usuario.Persona_PWD))) {
-      await conn.end();
-      return { error: "La antigua contraseña no es correcta" };
-    }
+
+    // GET USER PWD
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_PERSON`(?)", [email]);
+
+    const user = data[0][0][0];
+
+    // Matching passwords
+    if (!(await matchPassword(oldPassword, user.Person_PWD))) return { error: "La antigua contraseña no es correcta" };
+
+    // Encrypting new password
     newPassword = await encryptPassword(newPassword);
-    await conn.query(`CALL SP_UPDATE_PASSWORD(?,?);`, [email, newPassword]);
-    conn.end();
+
+    // Updating password
+    await ClsBDConexion.conn.query(`CALL SP_UPDATE_PASSWORD(?,?);`, [email, newPassword]);
+
     return { success: "Contraseña modificada correctamente" };
   }
   async editarEstado(id: number, estado: number) {
     const conn = await connect();
     await conn.query("CALL `SP_UPDATE_STATUS_PERSON`(?,?)", [id, estado]);
     await conn.end();
-    return { success: `Usuario ${estado === 1 ? "Habilitado" : "Inhabilitado"}` };
+    return { success: `user ${estado === 1 ? "Habilitado" : "Inhabilitado"}` };
   }
   async getFoto(id: number) {
     const conn = await connect();

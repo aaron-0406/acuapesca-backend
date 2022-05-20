@@ -19,3 +19,9 @@ export const createUser = async (req: Request, res: Response) => {
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
   }
 };
+
+export const editUser = async (req: Request, res: Response) => {};
+export const changeStateUser = async (req: Request, res: Response) => {};
+export const deleteUser = async (req: Request, res: Response) => {
+  
+}

@@ -1,7 +1,7 @@
-import boom from "@hapi/boom";
 import { NextFunction, Router, Request, Response } from "express";
-import passport from "passport";
-import { signin } from "../controllers/auth.controller";
+import { JWTAuth } from "../lib/auth.handler";
+import { signin, resetPassword } from "../controllers/auth.controller";
+import ClsUser from "../class/ClsUser";
 const router = Router();
 
 // This method is for validate request body of Login route
@@ -11,11 +11,14 @@ const verifyLoginRequestBody = (req: Request, res: Response, next: NextFunction)
   if (!password) return res.json({ error: "Falta el campo 'password'" }).status(400);
   next();
 };
+// This method is for validate request body of Change Password route
+const verifyChangePWDRequestBody = (req: Request, res: Response, next: NextFunction) => {
+  const validate = ClsUser.validateResetPWDData(req);
+  if (!validate.validation) return res.json({ error: `${validate.message}` }).status(400);
+  next();
+};
 
 router.post("/signin", verifyLoginRequestBody, signin);
+router.put("/change-password", JWTAuth, verifyChangePWDRequestBody, resetPassword);
 
-// router.post("/signup", signup);
-// router.post("/logout", logout);
-// router.patch("/resetPwd", passport.authenticate("jwt", { session: false }), resetPassword);
-// router.post("/recovery", recoveryPassword);
 export default router;
