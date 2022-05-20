@@ -1,5 +1,4 @@
 import { FieldPacket, RowDataPacket } from "mysql2";
-import { Pool } from "mysql2/promise";
 
 //Lib
 import { encryptPassword, matchPassword } from "../lib/helpers";
@@ -10,46 +9,19 @@ import { connect } from "../database";
 // Interfaces
 import IPersona from "../interface/IPerson";
 import IValidation from "../interface/IValidation";
+import ClsBDConexion from "./ClsBDConexion";
 
-class ClsPersona {
-  private Person_Id: number;
-  private Person_Status: boolean;
-  private Person_Email: string = "";
-  private Person_PWD: string = "";
-
-  constructor() {
-    this.Person_Status = true;
-    this.Person_Id = -1;
-  }
-  async asignarValores(correo: string, password: string) {
-    this.Person_Email = correo;
-    this.Person_PWD = await encryptPassword(password);
-    this.Person_Status = true;
-  }
-  async registrarPersona(): Promise<IPersona> {
-    const conn = await connect();
-    const sql = `CALL SP_CREATE_PERSON(?,?,?); SELECT @id as Persona_Id;`;
-    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query(sql, [this.Person_Status, this.Person_Email, this.Person_PWD]);
-    this.Person_Id = data[0][1][0].Person_Id;
-    const newPersona: IPersona = {
-      Person_Id: this.Person_Id,
-      Person_Email: this.Person_Email,
-      Person_Status: this.Person_Status,
-    };
-    await conn.end();
-    return newPersona;
-  }
-
+class ClsPerson {
   /*
     Description: The porpuse of this method is for to validate Login requirements
     @param conn : Connection to database
     @param email : User's email
     @param password : User's password 
   */
-  async verifyLogin(conn: Pool, email: string, password: string): Promise<IValidation> {
+  async verifyLogin(email: string, password: string): Promise<IValidation> {
     // Store Procedure
     const sql = `CALL SP_GET_PERSON(?);`;
-    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query(sql, [email]);
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [email]);
 
     // Data from database
     const persona = data[0][0][0];
@@ -95,4 +67,4 @@ class ClsPersona {
     return foto_url.Dato_Alfanum;
   }
 }
-export default new ClsPersona();
+export default new ClsPerson();

@@ -45,8 +45,12 @@ class ClsExpR {
     return { message: "Solo números", validation: false };
   };
   validarRequired = (valor: string): IValidation => {
-    if (valor.length === 0) return { message: "Coincide", validation: true };
+    if (valor.trim().length !== 0) return { message: "Coincide", validation: true };
     return { message: "Campo Requerido", validation: false };
+  };
+  validarLength = (valor: string, length: number): IValidation => {
+    if (valor.trim().length === length) return { message: `Coincide`, validation: true };
+    return { message: `Tamaño requerido ${length}`, validation: false };
   };
 }
 export default new ClsExpR();

@@ -4,3 +4,5 @@ fichero.py
 class.py
 interface.py
 consulta.sql
+src/public/docs
+dist

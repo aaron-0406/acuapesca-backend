@@ -3,13 +3,15 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
-import passport from 'passport'
+import passport from "passport";
 
-import './lib/passport';
+import "./lib/passport";
 
 //Routes
 import IndexRoutes from "./routes/index.routes";
 import AuthRouter from "./routes/auth.routes";
+import UserRouter from "./routes/user.routes";
+import ClsBDConexion from "./class/ClsBDConexion";
 
 declare global {
   namespace Express {
@@ -30,6 +32,7 @@ export class App {
     this.settings();
     this.middlewares();
     this.routes();
+    ClsBDConexion.connectBD();
   }
 
   settings() {
@@ -52,7 +55,8 @@ export class App {
     this.app.use(express.static(path.join(__dirname, "/public/build")));
   }
   routes() {
-    this.app.use('/api/v1/auth/', AuthRouter);
+    this.app.use("/api/v1/auth/", AuthRouter);
+    this.app.use("/api/v1/user/", UserRouter);
     this.app.use(IndexRoutes);
   }
 

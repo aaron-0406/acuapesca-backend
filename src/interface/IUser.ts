@@ -8,4 +8,5 @@ export default interface IUsuario {
   id_rango: number;
   address: string;
   status: boolean;
+  photo: string;
 }

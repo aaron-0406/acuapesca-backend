@@ -6,7 +6,7 @@ import { config } from "../config/config";
 
 // Classes
 import ClsPerson from "../class/ClsPerson";
-import ClsUsuario from "../class/ClsUsuario";
+import ClsUsuario from "../class/ClsUser";
 import ClsExpR from "../class/ClsExpR";
 
 //Interfaces
@@ -29,59 +29,18 @@ passport.use(
       const validation = verifyLoginData(req.body);
       if (!validation.validation) return done(validation.message, false);
 
-      // Initialization of connection to database
-      const conn = await connect();
-
       try {
-        const verification = await ClsPerson.verifyLogin(conn, email, password);
+        const verification = await ClsPerson.verifyLogin(email, password);
 
         if (!verification.validation) done(verification.message, false);
 
         if (verification.validation) {
-          const newUsuario: IUser = await ClsUsuario.getUser(email);
-          done(null, newUsuario);
+          const newUser: IUser = await ClsUsuario.getUser(email);
+          done(null, newUser);
         }
       } catch (error) {
         console.log(error);
         return done(error, false);
-      } finally {
-        conn.end();
-      }
-    }
-  )
-);
-
-//REGISTER
-passport.use(
-  "local.signup",
-  new Strategy(
-    {
-      usernameField: "email",
-      passwordField: "password",
-      passReqToCallback: true,
-    },
-    async (req, email, password, done) => {
-      try {
-        const validacion = VerificarDatosRegister(req.body);
-
-        if (!validacion.validation) return done(validacion.message, false, { message: validacion.message });
-
-        const { name, lastname, dni, address, id_rango } = req.body;
-
-        await ClsPerson.asignarValores(email, password); //Tabla Persona
-
-        const newPersona = await ClsPerson.registrarPersona(); //Tabla Persona Persona_Id
-
-        ClsUsuario.asignarValores(dni, address, name, lastname, id_rango);
-
-        const newEstudiante = await ClsUsuario.guardarDatos(newPersona); //Tabla Estudiante
-
-        const newUsuario: IUser = await ClsUsuario.getUser(newEstudiante.email);
-        return done(null, newUsuario);
-      } catch (error: any) {
-        console.log(error);
-        if (error.code === "ER_DUP_ENTRY") return done("Ese correo ya está en uso", false, { message: "Ese correo ya está en uso" });
-        return done("Ocurrió un error", false, { message: "Ocurrió un error" });
       }
     }
   )
@@ -105,16 +64,6 @@ passport.use(
     }
   )
 );
-
-const VerificarDatosRegister = (cuerpo: any): IValidation => {
-  const { email, nombre, apellido, dni, password, repeatPassword } = cuerpo;
-  //   if (password !== repeatPassword) return { message: "Contraseñas diferentes", validacion: false };
-  if (!ClsExpR.validarCorreo(email).validation) return ClsExpR.validarCorreo(email);
-  if (!ClsExpR.validarNombre(nombre).validation) return ClsExpR.validarNombre(nombre);
-  if (!ClsExpR.validarNombre(apellido).validation) return ClsExpR.validarNombre(apellido);
-  if (!ClsExpR.validarNombre(dni).validation) return ClsExpR.validarDigitos(dni);
-  return { message: "Validado", validation: true };
-};
 
 const verifyLoginData = (cuerpo: any): IValidation => {
   const { email, password } = cuerpo;

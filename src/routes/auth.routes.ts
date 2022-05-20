@@ -1,7 +1,7 @@
 import boom from "@hapi/boom";
 import { NextFunction, Router, Request, Response } from "express";
 import passport from "passport";
-import { signin, signup, logout, resetPassword, publico, recoveryPassword } from "../controllers/auth.controller";
+import { signin } from "../controllers/auth.controller";
 const router = Router();
 
 // This method is for validate request body of Login route
@@ -14,8 +14,8 @@ const verifyLoginRequestBody = (req: Request, res: Response, next: NextFunction)
 
 router.post("/signin", verifyLoginRequestBody, signin);
 
-router.post("/signup", signup);
-router.post("/logout", logout);
-router.patch("/resetPwd", passport.authenticate("jwt", { session: false }), resetPassword);
-router.post("/recovery", recoveryPassword);
+// router.post("/signup", signup);
+// router.post("/logout", logout);
+// router.patch("/resetPwd", passport.authenticate("jwt", { session: false }), resetPassword);
+// router.post("/recovery", recoveryPassword);
 export default router;
