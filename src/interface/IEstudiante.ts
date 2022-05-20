@@ -1,7 +1,7 @@
-import IPersona from "./IPersona";
+import IPerson from "./IPerson";
 
 export default interface IEstudiante {
-    Persona: IPersona;
+    Persona: IPerson;
     foto: string;
     documento: string;
     profesion: string;

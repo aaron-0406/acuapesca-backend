@@ -6,19 +6,24 @@ import boom from "@hapi/boom";
 import { signToken } from "../lib/jwt";
 
 // Classes
-import ClsPersona from "../class/ClsPersona";
+import ClsPersona from "../class/ClsPerson";
 
+// This controller is for signin route
 export const signin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     passport.authenticate("local.signin", { session: false }, (err, user, info) => {
-      if (err) return res.json({ error: err });
-      if (!user) return res.json({ error: "Contraseña o Correo inválidos" });
-      const token = signToken(user, process.env.JWT_SECRET + "");
+      if (info) return res.json({ error: `Faltan campos (email,password)` }).status(400);
+      if (err) return res.json({ error: err }).status(401);
+      if (!user) return res.json({ error: "Contraseña o Correo inválidos" }).status(401);
+
+      // Singing token with the user
+      const token = signToken(user, `${process.env.JWT_SECRET}`);
+
       return res.json({ success: "Sesión Iniciada", user, token });
     })(req, res, next);
   } catch (error) {
     console.log(error);
-    return res.json(boom.internal("Algo mal sucedió, intentelo más tarde"));
+    return res.json({ error: "Algo salió mal, intentelo más tarde" });
   }
 };
 

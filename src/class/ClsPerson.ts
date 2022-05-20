@@ -1,4 +1,5 @@
 import { FieldPacket, RowDataPacket } from "mysql2";
+import { Pool } from "mysql2/promise";
 
 //Lib
 import { encryptPassword, matchPassword } from "../lib/helpers";
@@ -7,48 +8,65 @@ import { encryptPassword, matchPassword } from "../lib/helpers";
 import { connect } from "../database";
 
 // Interfaces
-import IPersona from "../interface/IPersona";
-import IValidacion from "../interface/IValidacion";
+import IPersona from "../interface/IPerson";
+import IValidation from "../interface/IValidation";
 
 class ClsPersona {
-  private Persona_Id: number;
-  private Persona_Estado: boolean;
-  private Persona_Correo: string = "";
-  private Persona_Password: string = "";
+  private Person_Id: number;
+  private Person_Status: boolean;
+  private Person_Email: string = "";
+  private Person_PWD: string = "";
 
   constructor() {
-    this.Persona_Estado = true;
-    this.Persona_Id = -1;
+    this.Person_Status = true;
+    this.Person_Id = -1;
   }
   async asignarValores(correo: string, password: string) {
-    this.Persona_Correo = correo;
-    this.Persona_Password = await encryptPassword(password);
-    this.Persona_Estado = true;
+    this.Person_Email = correo;
+    this.Person_PWD = await encryptPassword(password);
+    this.Person_Status = true;
   }
   async registrarPersona(): Promise<IPersona> {
     const conn = await connect();
     const sql = `CALL SP_CREATE_PERSON(?,?,?); SELECT @id as Persona_Id;`;
-    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query(sql, [this.Persona_Estado, this.Persona_Correo, this.Persona_Password]);
-    this.Persona_Id = data[0][1][0].Persona_Id;
+    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query(sql, [this.Person_Status, this.Person_Email, this.Person_PWD]);
+    this.Person_Id = data[0][1][0].Person_Id;
     const newPersona: IPersona = {
-      Persona_Id: this.Persona_Id,
-      Persona_Correo: this.Persona_Correo,
-      Persona_Estado: this.Persona_Estado,
+      Person_Id: this.Person_Id,
+      Person_Email: this.Person_Email,
+      Person_Status: this.Person_Status,
     };
     await conn.end();
     return newPersona;
   }
-  async VerificarLogin(correo: string, password: string): Promise<IValidacion> {
-    const conn = await connect();
+
+  /*
+    Description: The porpuse of this method is for to validate Login requirements
+    @param conn : Connection to database
+    @param email : User's email
+    @param password : User's password 
+  */
+  async verifyLogin(conn: Pool, email: string, password: string): Promise<IValidation> {
+    // Store Procedure
     const sql = `CALL SP_GET_PERSON(?);`;
-    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query(sql, [correo]);
+    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query(sql, [email]);
+
+    // Data from database
     const persona = data[0][0][0];
-    await conn.end();
-    if (!persona) return { mensaje: "El correo no está registrado", validacion: false };
-    if (persona.Persona_Estado === 0) return { mensaje: "Estás deshabilitado", validacion: false };
-    if (!(await matchPassword(password, persona.Persona_PWD))) return { mensaje: "Contraseña incorrecta", validacion: false };
-    return { mensaje: "Verificado", validacion: true };
+
+    // exist?
+    if (!persona) return { message: "El correo no está registrado", validation: false };
+
+    // Enaled or disabled?
+    if (persona.Person_Status === 0) return { message: "Estás deshabilitado", validation: false };
+
+    // Password match?
+    if (!(await matchPassword(password, persona.Person_PWD))) return { message: "Contraseña incorrecta", validation: false };
+
+    // All ok
+    return { message: "Verificado", validation: true };
   }
+
   async changePassword(oldPassword: string, newPassword: string, repeatPassword: string, email?: string) {
     if (newPassword !== repeatPassword) return { error: "La nueva contraseña no coincide con la repetida" };
     const conn = await connect();

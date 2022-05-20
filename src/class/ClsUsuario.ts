@@ -1,7 +1,7 @@
 //Interfaces
 import IEstudiante from "../interface/IEstudiante";
-import IPersona from "../interface/IPersona";
-import IUsuario from "../interface/IUsuario";
+import IPersona from "../interface/IPerson";
+import IUsuario from "../interface/IUser";
 
 //Database
 import { FieldPacket, RowDataPacket } from "mysql2";
@@ -30,11 +30,11 @@ class ClsUsuario {
   async guardarDatos(persona: IPersona): Promise<IUsuario> {
     const conn = await connect();
     const sql = `CALL SP_CREATE_USUARIO(?,?,?,?,?,?);`;
-    await conn.query(sql, [this.dni, this.id_rango, this.name, this.lastname, this.address, persona.Persona_Id]);
+    await conn.query(sql, [this.dni, this.id_rango, this.name, this.lastname, this.address, persona.Person_Id]);
     const estudiante: IUsuario = {
-      id: persona.Persona_Id,
-      email: persona.Persona_Correo,
-      status: persona.Persona_Estado,
+      id: persona.Person_Id,
+      email: persona.Person_Email,
+      status: persona.Person_Status,
       address: this.address,
       dni: this.dni,
       id_rango: this.id_rango,
