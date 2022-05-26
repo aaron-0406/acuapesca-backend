@@ -4,6 +4,9 @@ import ClsProceso from "../class/ClsProceso";
 
 export const getProcess = async (req: Request, res: Response) => {
   try {
+    const procesos = await ClsProceso.getProcess();
+    console.log(procesos);
+    return res.json({ success: "Datos obtenidos", procesos });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
@@ -29,7 +32,6 @@ export const createProcess = async (req: Request, res: Response) => {
   try {
     const { name, code } = req.body;
     const proceso = await ClsProceso.createProcess(name, code);
-    console.log(proceso);
     return res.json({ success: "Proceso creado", proceso });
   } catch (error) {
     console.log(error);

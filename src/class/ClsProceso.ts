@@ -4,10 +4,9 @@ import ClsBDConexion from "./ClsBDConexion";
 
 class ClsProceso {
   constructor() {}
-  async getProcess() {
+  async getProcess(): Promise<any[]> {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_PROCESS`()");
-    console.log(data[0][0][0]);
-    return data[0][0][0];
+    return data[0][0];
   }
   async createProcess(name: string, code: string): Promise<IProceso> {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_INSERT_PROCESS`(?,?); SELECT @id as 'id_process';", [name, code]);
