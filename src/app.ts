@@ -11,6 +11,8 @@ import "./lib/passport";
 import IndexRoutes from "./routes/index.routes";
 import AuthRouter from "./routes/auth.routes";
 import UserRouter from "./routes/user.routes";
+import ProcessRouter from "./routes/proceso.routes";
+
 import ClsBDConexion from "./class/ClsBDConexion";
 
 declare global {
@@ -57,6 +59,7 @@ export class App {
   routes() {
     this.app.use("/api/v1/auth/", AuthRouter);
     this.app.use("/api/v1/user/", UserRouter);
+    this.app.use("/api/v1/proceso/", ProcessRouter);
     this.app.use(IndexRoutes);
   }
 

@@ -13,7 +13,6 @@ import ClsExpR from "../class/ClsExpR";
 import IUser from "../interface/IUser";
 import IValidation from "../interface/IValidation";
 
-import { connect } from "../database";
 
 //LOGIN
 passport.use(
