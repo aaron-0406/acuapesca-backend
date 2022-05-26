@@ -41,6 +41,15 @@ export const createProcess = async (req: Request, res: Response) => {
 
 export const editProcess = async (req: Request, res: Response) => {
   try {
+    const { id } = req.params;
+    const { name, code } = req.body;
+
+    const validationId = ClsExpR.validarDigitos(id);
+    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
+    const idProcess = parseInt(id);
+
+    const proceso = await ClsProceso.editProcess(idProcess, name, code);
+    return res.json({ success: "Proceso editado", proceso });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
