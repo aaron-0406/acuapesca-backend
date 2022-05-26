@@ -21,7 +21,7 @@ class ClsProceso {
   }
 
   async editProcess(id: number, name: string, code: string) {
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_UPDATE_PROCESS`(?,?,?);", [id,name, code]);
+    await ClsBDConexion.conn.query("CALL `SP_UPDATE_PROCESS`(?,?,?);", [id,name, code]);
     const newProcess: IProceso = {
       id,
       name,
@@ -29,7 +29,9 @@ class ClsProceso {
     };
     return newProcess;
   }
-  async deleteProcess(id: number): Promise<void> {}
+  async deleteProcess(id: number): Promise<void> {
+    await ClsBDConexion.conn.query("CALL `SP_DELETE_PROCESS`(?);", [id]);
+  }
 
   async getProccessById(id: number): Promise<IProceso | undefined> {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_PROCESS_BY_ID`(?)", [id]);

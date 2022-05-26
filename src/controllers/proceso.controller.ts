@@ -58,6 +58,13 @@ export const editProcess = async (req: Request, res: Response) => {
 
 export const deleteProcess = async (req: Request, res: Response) => {
   try {
+    const { id } = req.params;
+
+    const validationId = ClsExpR.validarDigitos(id);
+    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
+    const idProcess = parseInt(id);
+    await ClsProceso.deleteProcess(idProcess);
+    return res.json({ success: "Proceso elimiado" });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
