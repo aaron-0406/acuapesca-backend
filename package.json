@@ -8,9 +8,9 @@
         "build": "tsc",
         "dev": "set NODE_ENV=development && nodemon src/index.ts --exec ts-node",
         "start": "set NODE_ENV=production && node dist/index.js",
-        "route": "python fichero.py",
-        "class": "python class.py",
-        "interface": "python interface.py"
+        "route": "python3 fichero.py",
+        "class": "python3 class.py",
+        "interface": "python3 interface.py"
     },
     "repository": {
         "type": "git",

@@ -1,18 +1,18 @@
 import { Request, Response } from "express";
 import ClsExpR from "../class/ClsExpR";
-import ClsProceso from "../class/ClsProceso";
+import ClsProcedure from "../class/ClsProcedure";
 
-export const getProcess = async (req: Request, res: Response) => {
+export const createProcedure = async (req: Request, res: Response) => {
   try {
-    const procesos = await ClsProceso.getProcess();
-    return res.json({ success: "Datos obtenidos", procesos });
+    const { process_id, code, title } = req.body;
+    const procedure = await ClsProcedure.createProcedure(title, code, parseInt(process_id));
+    return res.json({ success: "Procedimiento Creado", procedure });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
   }
 };
-
-export const getProcessById = async (req: Request, res: Response) => {
+export const getProcedures = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -20,53 +20,48 @@ export const getProcessById = async (req: Request, res: Response) => {
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
     const idProcess = parseInt(id);
 
-    const process = await ClsProceso.getProccessById(idProcess);
-    if (!process) return res.json({ error: "No existe un proceso con esa id" }).status(400);
-    return res.json({ success: "Proceso encontrado", process });
+    const procedures = await ClsProcedure.getProcedures(idProcess);
+    return res.json({ success: "Datos obtenidos", procedures });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
   }
 };
-
-export const createProcess = async (req: Request, res: Response) => {
-  try {
-    const { name, code } = req.body;
-    const proceso = await ClsProceso.createProcess(name, code);
-    return res.json({ success: "Proceso creado", proceso });
-  } catch (error) {
-    console.log(error);
-    return res.json({ error: "Ocurrió un error, intentelo más tarde" });
-  }
-};
-
-export const editProcess = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { name, code } = req.body;
-
-    const validationId = ClsExpR.validarDigitos(id);
-    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
-    const idProcess = parseInt(id);
-
-    const proceso = await ClsProceso.editProcess(idProcess, name, code);
-    return res.json({ success: "Proceso editado", proceso });
-  } catch (error) {
-    console.log(error);
-    return res.json({ error: "Ocurrió un error, intentelo más tarde" });
-  }
-};
-
-export const deleteProcess = async (req: Request, res: Response) => {
+export const getProcedureById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
     const validationId = ClsExpR.validarDigitos(id);
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
     const idProcess = parseInt(id);
+  } catch (error) {
+    console.log(error);
+    return res.json({ error: "Ocurrió un error, intentelo más tarde" });
+  }
+};
+export const editProcedure = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { process_id, code, title } = req.body;
 
-    await ClsProceso.deleteProcess(idProcess);
-    return res.json({ success: "Proceso elimiado" });
+    const validationId = ClsExpR.validarDigitos(id);
+    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
+    const idProcedure = parseInt(id);
+
+    const procedure = await ClsProcedure.editProcedure(idProcedure, title, code, parseInt(process_id));
+    return res.json({ success: "Procedimiento Creado", procedure });
+  } catch (error) {
+    console.log(error);
+    return res.json({ error: "Ocurrió un error, intentelo más tarde" });
+  }
+};
+export const deleteProcedure = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const validationId = ClsExpR.validarDigitos(id);
+    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
+    const idProcedure = parseInt(id);
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
