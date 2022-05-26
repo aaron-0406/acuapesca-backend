@@ -9,9 +9,22 @@ class ClsProcedure {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_PROCEDURES`(?)", [id]);
     return data[0][0];
   }
+
   async getProcedureById(id: number): Promise<IProcedure | undefined> {
-    return undefined;
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_PROCEDURE_BY_ID`(?)", [id]);
+    const procedure = data[0][0][0];
+
+    if (!procedure) return undefined;
+
+    const newProcedure: IProcedure = {
+      id: procedure.id,
+      process_id: procedure.process_id,
+      title: procedure.title,
+      code: procedure.code,
+    };
+    return newProcedure;
   }
+
   async createProcedure(title: string, code: string, process_id: number): Promise<IProcedure> {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_INSERT_PROCEDURE`(?,?,?); SELECT @id AS 'procedure_id'", [title, code, process_id]);
     const procedure: IProcedure = {
@@ -22,12 +35,14 @@ class ClsProcedure {
     };
     return procedure;
   }
+
   async editProcedure(id: number, title: string, code: string, process_id: number): Promise<IProcedure> {
+    await ClsBDConexion.conn.query("CALL `SP_UPDATE_PROCEDURE`(?,?,?,?)", [id,title, code, process_id]);
     const procedure: IProcedure = {
-      code: "",
-      process_id: 2,
-      title: "",
-      id: 1,
+      code,
+      process_id,
+      title,
+      id,
     };
     return procedure;
   }

@@ -48,9 +48,9 @@ const isStoredProcess = async (req: Request, res: Response, next: NextFunction) 
 };
 
 router.get("/:id", JWTAuth, checkRoles("Administrador"), getProcedures);
-router.get("/single/:id", JWTAuth, checkRoles("Administrador"), isStoredProcedure, getProcedureById);
+router.get("/single/:id", JWTAuth, checkRoles("Administrador"), getProcedureById);
 router.post("/", JWTAuth, checkRoles("Administrador"), validateData, isStoredProcess, createProcedure);
-router.put("/:id", JWTAuth, checkRoles("Administrador"), validateData, isStoredProcedure, editProcedure);
+router.put("/:id", JWTAuth, checkRoles("Administrador"), validateData, isStoredProcess, isStoredProcedure, editProcedure);
 router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStoredProcedure, deleteProcedure);
 
 export default router;

@@ -32,8 +32,8 @@ export const getProcessById = async (req: Request, res: Response) => {
 export const createProcess = async (req: Request, res: Response) => {
   try {
     const { name, code } = req.body;
-    const proceso = await ClsProceso.createProcess(name, code);
-    return res.json({ success: "Proceso creado", proceso });
+    const process = await ClsProceso.createProcess(name, code);
+    return res.json({ success: "Proceso creado", process });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });

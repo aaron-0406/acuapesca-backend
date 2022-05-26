@@ -33,7 +33,12 @@ export const getProcedureById = async (req: Request, res: Response) => {
 
     const validationId = ClsExpR.validarDigitos(id);
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
-    const idProcess = parseInt(id);
+    const idProcedure = parseInt(id);
+
+    const procedure = await ClsProcedure.getProcedureById(idProcedure);
+    if (!procedure) return res.json({ error: "No existe un proceso con esa id" }).status(400);
+
+    return res.json({ success: "Proceso encontrado", procedure });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
@@ -62,6 +67,9 @@ export const deleteProcedure = async (req: Request, res: Response) => {
     const validationId = ClsExpR.validarDigitos(id);
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
     const idProcedure = parseInt(id);
+
+
+    
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
