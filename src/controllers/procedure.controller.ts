@@ -38,7 +38,7 @@ export const getProcedureById = async (req: Request, res: Response) => {
     const procedure = await ClsProcedure.getProcedureById(idProcedure);
     if (!procedure) return res.json({ error: "No existe un proceso con esa id" }).status(400);
 
-    return res.json({ success: "Proceso encontrado", procedure });
+    return res.json({ success: "Procedimiento Encontrado", procedure });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
@@ -68,8 +68,8 @@ export const deleteProcedure = async (req: Request, res: Response) => {
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
     const idProcedure = parseInt(id);
 
-
-    
+    await ClsProcedure.deleteProcedure(idProcedure);
+    return res.json({ success: "Procedimiento elimiado" });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });

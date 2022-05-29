@@ -46,7 +46,9 @@ class ClsProcedure {
     };
     return procedure;
   }
-  async deleteProcedure(id: number): Promise<void> {}
+  async deleteProcedure(id: number): Promise<void> {
+    await ClsBDConexion.conn.query("CALL `SP_DELETE_PROCEDURE`(?)", [id]);
+  }
 }
 
 export default new ClsProcedure();

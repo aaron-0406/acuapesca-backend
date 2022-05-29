@@ -13,6 +13,7 @@ import AuthRouter from "./routes/auth.routes";
 import UserRouter from "./routes/user.routes";
 import ProcessRouter from "./routes/proceso.routes";
 import ProcedureRouter from "./routes/procedure.routes";
+import RangoRouter from "./routes/rango.routes";
 
 import ClsBDConexion from "./class/ClsBDConexion";
 
@@ -62,6 +63,7 @@ export class App {
     this.app.use("/api/v1/user/", UserRouter);
     this.app.use("/api/v1/proceso/", ProcessRouter);
     this.app.use("/api/v1/procedimiento/", ProcedureRouter);
+    this.app.use("/api/v1/rango/", RangoRouter);
     this.app.use(IndexRoutes);
   }
 
