@@ -1,14 +1,19 @@
+// mysql2 types
 import { FieldPacket, RowDataPacket } from "mysql2";
+
+// Connection to DataBase
 import ClsBDConexion from "./ClsBDConexion";
 
-interface IRango {
-  id: number;
-  name: string;
-  index: number;
-}
+/*
+  Description: This class is for manage Rango's data
+*/
 class ClsRango {
+  /*
+  Description: This method get all Rangos
+  */
   async getRangos(): Promise<any[]> {
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_RANGO`()");
+    const sql = "CALL `SP_GET_RANGO`()";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql);
     return data[0][0];
   }
 }
