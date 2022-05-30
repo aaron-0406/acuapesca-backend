@@ -16,9 +16,9 @@ const validateData = (req: Request, res: Response, next: NextFunction) => {
   const validationCode = ClsExpR.validarRequired(code);
   const validationProcessId = ClsExpR.validarDigitos(process_id);
 
-  if (!validationTitle.validation) return res.json({ error: `${validationTitle.message} (title)` });
-  if (!validationCode.validation) return res.json({ error: `${validationCode.message} (code)` });
-  if (!validationProcessId.validation) return res.json({ error: `El id del proceso es inválido (process_id)` });
+  if (!validationTitle.validation) return res.json({ error: `${validationTitle.message} (title)` }).status(400);
+  if (!validationCode.validation) return res.json({ error: `${validationCode.message} (code)` }).status(400);
+  if (!validationProcessId.validation) return res.json({ error: `El id del proceso es inválido (process_id)` }).status(400);
 
   next();
 };

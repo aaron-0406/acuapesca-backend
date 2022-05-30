@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import ClsProceso from "../class/ClsProceso";
 import ClsExpR from "../class/ClsExpR";
 import ClsProcedure from "../class/ClsProcedure";
 
@@ -19,6 +20,10 @@ export const getProcedures = async (req: Request, res: Response) => {
     const validationId = ClsExpR.validarDigitos(id);
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
     const idProcess = parseInt(id);
+
+    const process = await ClsProceso.getProccessById(idProcess);
+
+    if (!process) return res.json({ error: "No existe un proceso con esa id" }).status(400);
 
     const procedures = await ClsProcedure.getProcedures(idProcess);
     return res.json({ success: "Datos obtenidos", procedures });

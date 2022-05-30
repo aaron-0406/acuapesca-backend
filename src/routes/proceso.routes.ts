@@ -16,8 +16,8 @@ const validateData = (req: Request, res: Response, next: NextFunction) => {
   const validationName = ClsExpR.validarRequired(name);
   const validationCode = ClsExpR.validarRequired(code);
 
-  if (!validationName.validation) return res.json({ error: `${validationName.message} (name)` });
-  if (!validationCode.validation) return res.json({ error: `${validationCode.message} (code)` });
+  if (!validationName.validation) return res.json({ error: `${validationName.message} (name)` }).status(400);
+  if (!validationCode.validation) return res.json({ error: `${validationCode.message} (code)` }).status(400);
 
   next();
 };
