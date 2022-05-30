@@ -29,7 +29,7 @@ export const signin = async (req: Request, res: Response, next: NextFunction) =>
 export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { newPassword, repeatPassword, oldPassword } = req.body;
-    return res.json(await ClsPerson.changePassword(oldPassword, newPassword, repeatPassword, req.user?.email));
+    return res.json(await ClsPerson.changePassword(oldPassword, newPassword, repeatPassword, `${req.user?.email}`));
   } catch (error: any) {
     console.log(error);
     return res.json({ error: "Algo salió mal, intentelo más tarde" });

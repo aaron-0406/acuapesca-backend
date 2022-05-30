@@ -1,20 +1,23 @@
+// mysql2 types
 import { FieldPacket, RowDataPacket } from "mysql2";
 
 //Lib
 import { encryptPassword, matchPassword } from "../lib/helpers";
 
 //Database
-import { connect } from "../database";
-
-// Interfaces
-import IPersona from "../interface/IPerson";
-import IValidation from "../interface/IValidation";
 import ClsBDConexion from "./ClsBDConexion";
 
+// Interfaces
+import IValidation from "../interface/IValidation";
+
+/*
+  Description: This class has 3 methods
+  verifyLogin
+  changePassword
+*/
 class ClsPerson {
   /*
     Description: The porpuse of this method is for to validate Login requirements
-    @param conn : Connection to database
     @param email : User's email
     @param password : User's password 
   */
@@ -39,12 +42,20 @@ class ClsPerson {
     return { message: "Verificado", validation: true };
   }
 
-  async changePassword(oldPassword: string, newPassword: string, repeatPassword: string, email?: string) {
+  /*
+    Description: The porpuse of this method is to change password
+    @param oldPassword : password stored in database
+    @param newPassword : User's new passowrd
+    @param repeatPassword : new password repeated
+    @param email : User's email
+  */
+  async changePassword(oldPassword: string, newPassword: string, repeatPassword: string, email: string) {
     //Verfiying if the password is equal to repeatPassword
     if (newPassword !== repeatPassword) return { error: "La nueva contraseña no coincide con la repetida" };
 
     // GET USER PWD
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_PERSON`(?)", [email]);
+    const sql = "CALL `SP_GET_PERSON`(?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [email]);
 
     const user = data[0][0][0];
 
@@ -57,20 +68,8 @@ class ClsPerson {
     // Updating password
     await ClsBDConexion.conn.query(`CALL SP_UPDATE_PASSWORD(?,?);`, [email, newPassword]);
 
+    // All ok
     return { success: "Contraseña modificada correctamente" };
-  }
-  async editarEstado(id: number, estado: number) {
-    const conn = await connect();
-    await conn.query("CALL `SP_UPDATE_STATUS_PERSON`(?,?)", [id, estado]);
-    await conn.end();
-    return { success: `user ${estado === 1 ? "Habilitado" : "Inhabilitado"}` };
-  }
-  async getFoto(id: number) {
-    const conn = await connect();
-    const data: [RowDataPacket[][], FieldPacket[]] = await conn.query("CALL `SP_GET_FOTO`(?)", [id]);
-    const foto_url = data[0][0][0];
-    await conn.end();
-    return foto_url.Dato_Alfanum;
   }
 }
 export default new ClsPerson();
