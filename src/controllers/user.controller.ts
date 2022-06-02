@@ -11,6 +11,7 @@ export const getUsers = async (req: Request, res: Response) => {
   try {
     // Getting page and filter
     const { filtro, pagina } = req.query;
+    
     // Getting users in database
     const { users, quantity } = await ClsUser.getUsers(`${req.user?.rango}`, pagina?.toString(), filtro?.toString());
     users.map((user) => {

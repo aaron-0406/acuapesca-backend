@@ -196,17 +196,15 @@ class ClsUsuario {
     //In case there are not these querys
     pagina = pagina === undefined || pagina === "" ? "-1" : pagina;
     filtro = filtro === undefined ? "-1" : filtro;
-
     let quantity: number = 0;
 
     const limit = 20;
 
     const page = (parseInt(pagina) - 1) * limit;
 
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USERS`(?,?,?)", [limit * parseInt(pagina), filtro,rango]);
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USERS`(?,?,?)", [limit * parseInt(pagina), filtro, rango]);
     quantity = data[0][1][0].Cantidad;
 
-    
     if (pagina === "-1") return { users: data[0][0], quantity }; //Todo el resultado
 
     const users = data[0][0].splice(page, limit); //Separado por paginas

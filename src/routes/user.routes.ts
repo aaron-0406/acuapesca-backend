@@ -85,7 +85,7 @@ const isUserStored = async (req: Request, res: Response, next: NextFunction) => 
 };
 
 // Get Users Route
-router.get("/", JWTAuth, checkRoles("Administrador"), getUsers);
+router.get("/", JWTAuth, checkRoles("Administrador","Gestor"), getUsers);
 
 // Create User Route
 router.post("/", JWTAuth, checkRoles("Administrador"), multerFotoCreate, validateDataCreate, createUser);
