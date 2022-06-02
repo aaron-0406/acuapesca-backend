@@ -7,24 +7,15 @@ import ClsProceso from "../class/ClsProceso";
 const router = Router();
 
 const validateData = (req: Request, res: Response, next: NextFunction) => {
-  const { title, code, process_id } = req.body;
-  if (!title) return res.json({ error: "Falta el campo 'title'" }).status(400);
-  if (!process_id) return res.json({ error: "Falta el campo 'process_id'" }).status(400);
-  if (!code) return res.json({ error: "Falta el campo 'code'" }).status(400);
-
-  const validationTitle = ClsExpR.validarRequired(title);
-  const validationCode = ClsExpR.validarRequired(code);
-  const validationProcessId = ClsExpR.validarDigitos(process_id);
-
-  if (!validationTitle.validation) return res.json({ error: `${validationTitle.message} (title)` }).status(400);
-  if (!validationCode.validation) return res.json({ error: `${validationCode.message} (code)` }).status(400);
-  if (!validationProcessId.validation) return res.json({ error: `El id del proceso es inválido (process_id)` }).status(400);
-
+  const validate = ClsProcedure.validateData(req);
+  if (!validate.validation) return res.json({ error: `${validate.message}` }).status(400);
   next();
 };
 
 const isStoredProcedure = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
+
+  if (!id) return res.json({ error: "No ha enviado una id" }).status(400);
 
   const validationId = ClsExpR.validarDigitos(id);
   if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
@@ -32,6 +23,7 @@ const isStoredProcedure = async (req: Request, res: Response, next: NextFunction
 
   const procedure = await ClsProcedure.getProcedureById(idProcedure);
   if (!procedure) return res.json({ error: "No existe un procedimiento con esa id" }).status(400);
+  req.body.procedure = procedure;
   next();
 };
 
@@ -44,11 +36,12 @@ const isStoredProcess = async (req: Request, res: Response, next: NextFunction) 
 
   const process = await ClsProceso.getProccessById(idProcess);
   if (!process) return res.json({ error: "No existe un proceso con esa id" }).status(400);
+  req.body.process = process;
   next();
 };
 
-router.get("/:id", JWTAuth, checkRoles("Administrador"), getProcedures);
-router.get("/single/:id", JWTAuth, checkRoles("Administrador"), getProcedureById);
+router.get("/:id", JWTAuth, checkRoles("Administrador", "Gestor"), getProcedures);
+router.get("/single/:id", JWTAuth, checkRoles("Administrador"), isStoredProcedure, getProcedureById);
 router.post("/", JWTAuth, checkRoles("Administrador"), validateData, isStoredProcess, createProcedure);
 router.put("/:id", JWTAuth, checkRoles("Administrador"), validateData, isStoredProcess, isStoredProcedure, editProcedure);
 router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStoredProcedure, deleteProcedure);

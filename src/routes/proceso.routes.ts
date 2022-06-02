@@ -19,10 +19,10 @@ const validateData = (req: Request, res: Response, next: NextFunction) => {
 const isStored = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
-  if (!id) return res.json({ error: "No ha enviado una id" });
+  if (!id) return res.json({ error: "No ha enviado una id" }).status(400);
 
   const validationId = ClsExpR.validarDigitos(id);
-  if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
+  if (!validationId.validation) return res.json({ error: `La id enviada no es válida` }).status(400);
   const idProcess = parseInt(id);
 
   const process = await ClsProceso.getProccessById(idProcess);
