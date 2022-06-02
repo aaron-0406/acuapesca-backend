@@ -44,6 +44,7 @@ const multerFotoCreate = (req: Request, res: Response, next: NextFunction) => {
     next();
   });
 };
+
 // Photo middleware
 const multerFotoEdit = (req: Request, res: Response, next: NextFunction) => {
   fotosPerfil.single("photo")(req, res, (err) => {
@@ -68,7 +69,7 @@ const isUserStored = async (req: Request, res: Response, next: NextFunction) => 
     if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
     return res.json({ error: `La id enviada no es válida` }).status(400);
   }
-  
+
   // Getting user in database
   const idUser = parseInt(id);
   const user = await ClsUser.getUserById(idUser);
@@ -85,7 +86,7 @@ const isUserStored = async (req: Request, res: Response, next: NextFunction) => 
 };
 
 // Get Users Route
-router.get("/", JWTAuth, checkRoles("Administrador","Gestor"), getUsers);
+router.get("/", JWTAuth, checkRoles("Administrador", "Gestor"), getUsers);
 
 // Create User Route
 router.post("/", JWTAuth, checkRoles("Administrador"), multerFotoCreate, validateDataCreate, createUser);

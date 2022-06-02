@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
-import ClsExpR from "../class/ClsExpR";
 import ClsProceso from "../class/ClsProceso";
 
+// Get Process Controller
 export const getProcess = async (req: Request, res: Response) => {
   try {
-    const procesos = await ClsProceso.getProcess();
+    const procesos = await ClsProceso.getProcess(`${req.user?.rango}`);
+
+    procesos.map((proceso) => {
+      proceso.status = proceso.status == 1;
+      return proceso;
+    });
+
     return res.json({ success: "Datos obtenidos", procesos });
   } catch (error) {
     console.log(error);
@@ -12,16 +18,10 @@ export const getProcess = async (req: Request, res: Response) => {
   }
 };
 
+// Get Process By Id Controller
 export const getProcessById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-
-    const validationId = ClsExpR.validarDigitos(id);
-    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
-    const idProcess = parseInt(id);
-
-    const process = await ClsProceso.getProccessById(idProcess);
-    if (!process) return res.json({ error: "No existe un proceso con esa id" }).status(400);
+    const { process } = req.body;
     return res.json({ success: "Proceso encontrado", process });
   } catch (error) {
     console.log(error);
@@ -29,10 +29,11 @@ export const getProcessById = async (req: Request, res: Response) => {
   }
 };
 
+// Create Process Controller
 export const createProcess = async (req: Request, res: Response) => {
   try {
-    const { name, code } = req.body;
-    const process = await ClsProceso.createProcess(name, code);
+    const { name, code, status } = req.body;
+    const process = await ClsProceso.createProcess(name, code, status);
     return res.json({ success: "Proceso creado", process });
   } catch (error) {
     console.log(error);
@@ -40,16 +41,11 @@ export const createProcess = async (req: Request, res: Response) => {
   }
 };
 
+// Edit Process Controller
 export const editProcess = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { name, code } = req.body;
-
-    const validationId = ClsExpR.validarDigitos(id);
-    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
-    const idProcess = parseInt(id);
-
-    const proceso = await ClsProceso.editProcess(idProcess, name, code);
+    const { name, code, status, process } = req.body;
+    const proceso = await ClsProceso.editProcess(process.id, name, code, status);
     return res.json({ success: "Proceso editado", proceso });
   } catch (error) {
     console.log(error);
@@ -57,15 +53,11 @@ export const editProcess = async (req: Request, res: Response) => {
   }
 };
 
+// Delete Process Controller
 export const deleteProcess = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-
-    const validationId = ClsExpR.validarDigitos(id);
-    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
-    const idProcess = parseInt(id);
-
-    await ClsProceso.deleteProcess(idProcess);
+    const { process } = req.body;
+    await ClsProceso.deleteProcess(process.id);
     return res.json({ success: "Proceso elimiado" });
   } catch (error) {
     console.log(error);

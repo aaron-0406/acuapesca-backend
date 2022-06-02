@@ -28,7 +28,7 @@ class ClsUsuario {
     if (!dni) return { message: "Falta el campo 'dni'", validation: false };
     if (!id_rango) return { message: "Falta el campo 'id_rango'", validation: false };
     if (!address) return { message: "Falta el campo 'address'", validation: false };
-    if (!status) return { message: "Falta el campo 'status'", validation: false };
+    if (status === undefined) return { message: "Falta el campo 'status'", validation: false };
     if (mode === "Create") {
       if (!password) return { message: "Falta el campo 'password'", validation: false };
     }
@@ -115,7 +115,9 @@ class ClsUsuario {
     @param email: user's email
   */
   async getUserByEmail(email: string): Promise<IUser> {
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER_BY_EMAIL`(?)", [email]);
+    const sql = "CALL `SP_GET_USER_BY_EMAIL`(?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [email]);
+
     const user = data[0][0][0];
     const newUser: IUser = {
       id: user.id,
@@ -137,9 +139,13 @@ class ClsUsuario {
     @param id: id's email
   */
   async getUserById(id: number): Promise<IUser | undefined> {
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER_BY_ID`(?)", [id]);
+    const sql = "CALL `SP_GET_USER_BY_ID`(?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
+
     const user = data[0][0][0];
+
     if (!user) return undefined;
+
     const newUser: IUser = {
       id: user.id,
       name: user.name,
@@ -169,9 +175,14 @@ class ClsUsuario {
     @param photo: user's photo
   */
   async editUser(id: number, status: boolean, email: string, password: string, dni: string, name: string, lastname: string, address: string, id_rango: number, photo: string): Promise<IUser> {
-    await ClsBDConexion.conn.query("CALL `SP_UPDATE_USER`(?,?,?,?,?,?,?,?,?,?)", [id, name, lastname, email, password, status ? 1 : 0, id_rango, dni, address, photo]);
-    const resRango: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_RANGO_BY_ID`(?)", [id_rango]);
+    const sqlUpdateUser = "CALL `SP_UPDATE_USER`(?,?,?,?,?,?,?,?,?,?)";
+    await ClsBDConexion.conn.query(sqlUpdateUser, [id, name, lastname, email, password, status ? 1 : 0, id_rango, dni, address, photo]);
+
+    const sqlGetRango = "CALL `SP_GET_RANGO_BY_ID`(?)";
+    const resRango: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sqlGetRango, [id_rango]);
+
     const rangoNombre = resRango[0][0][0];
+
     const newUser: IUser = {
       id,
       name,
@@ -202,7 +213,8 @@ class ClsUsuario {
 
     const page = (parseInt(pagina) - 1) * limit;
 
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USERS`(?,?,?)", [limit * parseInt(pagina), filtro, rango]);
+    const sql = "CALL `SP_GET_USERS`(?,?,?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [limit * parseInt(pagina), filtro, rango]);
     quantity = data[0][1][0].Cantidad;
 
     if (pagina === "-1") return { users: data[0][0], quantity }; //Todo el resultado
@@ -217,7 +229,8 @@ class ClsUsuario {
     @param id : user's id
   */
   async getPhotoByUserId(id: number) {
-    const data: [any[]] = await ClsBDConexion.conn.query("SELECT Dato_Alfanum as 'photo' FROM Dato WHERE Campo_Id = 7 AND Persona_Id = ?", [id]);
+    const sql = "SELECT Dato_Alfanum as 'photo' FROM Dato WHERE Campo_Id = 7 AND Persona_Id = ?";
+    const data: [any[]] = await ClsBDConexion.conn.query(sql, [id]);
     return data[0][0].photo;
   }
 }

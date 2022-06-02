@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
+// Middleware files for user photos
 const storageFotosPerfil = multer.diskStorage({
   destination: path.join(__dirname, "../public/user_photos"),
   filename: (req, file, cb) => {
@@ -10,6 +11,7 @@ const storageFotosPerfil = multer.diskStorage({
   },
 });
 
+// Filter photos
 const filterFotos = async (req: any, file: any, cb: any) => {
   const filetypes = /JPG|JPEG|jpg|jpeg|png|PNG/;
   const mimetype = filetypes.test(file.mimetype);
@@ -19,6 +21,7 @@ const filterFotos = async (req: any, file: any, cb: any) => {
   cb("Archivo debe ser una foto.");
 };
 
+// Middleware for files
 const storageArchivos = multer.diskStorage({
   destination: path.join(__dirname, "../public/docs"),
   filename: (req, file, cb) => {

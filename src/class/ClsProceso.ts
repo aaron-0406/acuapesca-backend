@@ -1,69 +1,44 @@
 // mysql2 types
 import { FieldPacket, RowDataPacket } from "mysql2";
 
+import { Request } from "express";
+
 // Connection to DataBase
 import ClsBDConexion from "./ClsBDConexion";
 
 // Interfaces
 import IProceso from "../interface/IProceso";
+import IValidation from "../interface/IValidation";
+
+import ClsExpR from "./ClsExpR";
 
 /*
   Description: This class is for manage Process's data
 */
 class ClsProceso {
   /*
+    Description: This method validate request body
+  */
+  validateData(req: Request): IValidation {
+    const { name, code, status } = req.body;
+    if (!name) return { message: "Falta el campo 'name'", validation: false };
+    if (!code) return { message: "Falta el campo 'code'", validation: false };
+    if (status === undefined) return { message: "Falta el campo 'status'", validation: false };
+    const validationName = ClsExpR.validarRequired(name);
+    const validationCode = ClsExpR.validarRequired(code);
+
+    if (!validationName.validation) return { message: `${validationName.message} (name)`, validation: false };
+    if (!validationCode.validation) return { message: `${validationCode.message} (code)`, validation: false };
+    return { message: "Ok", validation: true };
+  }
+
+  /*
     Description: This method get all process
   */
-  async getProcess(): Promise<any[]> {
-    const sql = "CALL `SP_GET_PROCESS`()";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql);
+  async getProcess(rango: string): Promise<any[]> {
+    const sql = "CALL `SP_GET_PROCESS`(?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [rango]);
     return data[0][0];
-  }
-
-  /*
-    Description: This method create a new process
-    @param name: process's name
-    @param code: process's code
-  */
-  async createProcess(name: string, code: string): Promise<IProceso> {
-    const sql = "CALL `SP_INSERT_PROCESS`(?,?); SELECT @id as 'id_process';";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [name, code]);
-
-    //New Process
-    const newProcess: IProceso = {
-      id: data[0][1][0].id_process,
-      name,
-      code,
-    };
-    return newProcess;
-  }
-
-  /*
-    Description: This method create a new process
-    @param id: process's id
-    @param name: process's name
-    @param code: process's code
-  */
-  async editProcess(id: number, name: string, code: string) {
-    const sql = "CALL `SP_UPDATE_PROCESS`(?,?,?);";
-    await ClsBDConexion.conn.query(sql, [id, name, code]);
-
-    // Process edited
-    const newProcess: IProceso = {
-      id,
-      name,
-      code,
-    };
-    return newProcess;
-  }
-
-  /*
-    Description: This method create a new process
-    @param id: process's id
-  */
-  async deleteProcess(id: number): Promise<void> {
-    const sql = "CALL `SP_DELETE_PROCESS`(?);";
-    await ClsBDConexion.conn.query(sql, [id]);
   }
 
   /*
@@ -83,8 +58,57 @@ class ClsProceso {
       id: proceso.id,
       name: proceso.name,
       code: proceso.code,
+      status: proceso.status == 1,
     };
     return newProcess;
+  }
+
+  /*
+    Description: This method create a new process
+    @param name: process's name
+    @param code: process's code
+  */
+  async createProcess(name: string, code: string, status: boolean): Promise<IProceso> {
+    const sql = "CALL `SP_INSERT_PROCESS`(?,?,?); SELECT @id as 'id_process';";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [name, code, status ? 1 : 0]);
+
+    //New Process
+    const newProcess: IProceso = {
+      id: data[0][1][0].id_process,
+      name,
+      code,
+      status,
+    };
+    return newProcess;
+  }
+
+  /*
+    Description: This method create a new process
+    @param id: process's id
+    @param name: process's name
+    @param code: process's code
+  */
+  async editProcess(id: number, name: string, code: string, status: boolean) {
+    const sql = "CALL `SP_UPDATE_PROCESS`(?,?,?,?);";
+    await ClsBDConexion.conn.query(sql, [id, name, code, status ? 1 : 0]);
+
+    // Process edited
+    const newProcess: IProceso = {
+      id,
+      name,
+      code,
+      status,
+    };
+    return newProcess;
+  }
+
+  /*
+    Description: This method create a new process
+    @param id: process's id
+  */
+  async deleteProcess(id: number): Promise<void> {
+    const sql = "CALL `SP_DELETE_PROCESS`(?);";
+    await ClsBDConexion.conn.query(sql, [id]);
   }
 }
 

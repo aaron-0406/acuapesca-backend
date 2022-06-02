@@ -40,11 +40,13 @@ export class App {
     ClsBDConexion.connectBD();
   }
 
+  // Settings
   settings() {
     dotenv.config();
     this.app.set("port", this.port || process.env.PORT || 4000);
   }
 
+  // Middlewares
   middlewares() {
     this.app.use(morgan("dev"));
     this.app.use(express.json());
@@ -59,6 +61,8 @@ export class App {
     this.app.use(express.static(path.join(__dirname, "/public")));
     this.app.use(express.static(path.join(__dirname, "/public/build")));
   }
+
+  // Routes
   routes() {
     this.app.use("/api/v1/auth/", AuthRouter);
     this.app.use("/api/v1/user/", UserRouter);

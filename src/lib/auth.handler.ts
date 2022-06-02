@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { TokenExpiredError } from "jsonwebtoken";
 import passport from "passport";
 
+// Middleware for roles
 export const checkRoles = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
@@ -11,6 +12,7 @@ export const checkRoles = (...roles: string[]) => {
   };
 };
 
+// Authenticate by JWT
 export const JWTAuth = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate("jwt", { session: false }, (err, user, info: TokenExpiredError) => {
     if (err || !user) return res.json({ error: info.message });
