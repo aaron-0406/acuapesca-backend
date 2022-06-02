@@ -59,14 +59,14 @@ const isUserStored = async (req: Request, res: Response, next: NextFunction) => 
   // In case they didn't send the id
   if (!id) {
     if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
-    return res.json({ error: "No ha enviado una id como parámetro" }).status(500);
+    return res.json({ error: "No ha enviado una id como parámetro" }).status(400);
   }
 
   // In case is not a number
   const validationId = ClsExpR.validarDigitos(id);
   if (!validationId.validation) {
     if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
-    return res.json({ error: `La id enviada no es válida` }).status(500);
+    return res.json({ error: `La id enviada no es válida` }).status(400);
   }
   
   // Getting user in database
@@ -76,7 +76,7 @@ const isUserStored = async (req: Request, res: Response, next: NextFunction) => 
   // If there is not a user stored
   if (!user) {
     if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
-    return res.json({ error: "No hay un usuario registrado con ese id" }).status(500);
+    return res.json({ error: "No hay un usuario registrado con ese id" }).status(400);
   }
 
   // We put the user data in request body for the next function

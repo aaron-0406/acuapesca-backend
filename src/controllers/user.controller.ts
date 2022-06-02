@@ -72,6 +72,7 @@ export const editUser = async (req: Request, res: Response) => {
     return res.json({ success: "Usuario editado correctamente", user });
   } catch (error: any) {
     console.log(error);
+    if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
     if (error.code === "ER_DUP_ENTRY") return res.json({ error: "El correo ya está registrado" });
     return res.json({ error: "Ocurrió un error, intentelo más tarde" }).status(500);
   }
