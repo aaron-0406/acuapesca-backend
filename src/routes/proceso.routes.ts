@@ -1,8 +1,10 @@
 import { NextFunction, Router, Request, Response } from "express";
 
+// Libs
 import { checkRoles, JWTAuth } from "../lib/auth.handler";
 import { createProcess, deleteProcess, editProcess, getProcessById, getProcess } from "../controllers/proceso.controller";
 
+// Class
 import ClsExpR from "../class/ClsExpR";
 import ClsProceso from "../class/ClsProceso";
 

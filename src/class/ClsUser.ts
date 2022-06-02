@@ -112,6 +112,7 @@ class ClsUsuario {
 
   /*
     Description: This method get an user by email
+    @param email: user's email
   */
   async getUserByEmail(email: string): Promise<IUser> {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER_BY_EMAIL`(?)", [email]);
@@ -133,6 +134,7 @@ class ClsUsuario {
 
   /*
     Description: This method get an user by id
+    @param id: id's email
   */
   async getUserById(id: number): Promise<IUser | undefined> {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER_BY_ID`(?)", [id]);
@@ -153,6 +155,19 @@ class ClsUsuario {
     return newUser;
   }
 
+  /*
+    Description: This method edit a user
+    @param id: id's status
+    @param status: user's status
+    @param email: user's email
+    @param password: user's password
+    @param dni: user's dni
+    @param name: user's name
+    @param lastname: user's lastname
+    @param address: user's address
+    @param id_rango: user's id_rango
+    @param photo: user's photo
+  */
   async editUser(id: number, status: boolean, email: string, password: string, dni: string, name: string, lastname: string, address: string, id_rango: number, photo: string): Promise<IUser> {
     await ClsBDConexion.conn.query("CALL `SP_UPDATE_USER`(?,?,?,?,?,?,?,?,?,?)", [id, name, lastname, email, password, status ? 1 : 0, id_rango, dni, address, photo]);
     const resRango: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_RANGO_BY_ID`(?)", [id_rango]);
@@ -174,20 +189,35 @@ class ClsUsuario {
 
   /*
     Description: This method get users
+     @param pagina : page
+     @param filtro : filter
   */
-  async getUsers(pagina?: string, filtro?: string): Promise<{ users: RowDataPacket[]; quantity: number }> {
+  async getUsers(rango: string, pagina?: string, filtro?: string): Promise<{ users: RowDataPacket[]; quantity: number }> {
+    //In case there are not these querys
     pagina = pagina === undefined || pagina === "" ? "-1" : pagina;
     filtro = filtro === undefined ? "-1" : filtro;
+
     let quantity: number = 0;
-    const cantidadDatos = 20;
-    const page = (parseInt(pagina) - 1) * cantidadDatos;
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USERS`(?,?)", [cantidadDatos * parseInt(pagina), filtro]);
+
+    const limit = 20;
+
+    const page = (parseInt(pagina) - 1) * limit;
+
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USERS`(?,?,?)", [limit * parseInt(pagina), filtro,rango]);
     quantity = data[0][1][0].Cantidad;
+
+    
     if (pagina === "-1") return { users: data[0][0], quantity }; //Todo el resultado
-    const users = data[0][0].splice(page, cantidadDatos); //Separado por paginas
+
+    const users = data[0][0].splice(page, limit); //Separado por paginas
+
     return { users, quantity };
   }
 
+  /*
+    Description: This method get photo's user
+    @param id : user's id
+  */
   async getPhotoByUserId(id: number) {
     const data: [any[]] = await ClsBDConexion.conn.query("SELECT Dato_Alfanum as 'photo' FROM Dato WHERE Campo_Id = 7 AND Persona_Id = ?", [id]);
     return data[0][0].photo;

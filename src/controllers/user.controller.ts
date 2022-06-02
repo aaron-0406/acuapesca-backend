@@ -11,9 +11,12 @@ export const getUsers = async (req: Request, res: Response) => {
   try {
     // Getting page and filter
     const { filtro, pagina } = req.query;
-
     // Getting users in database
-    const { users, quantity } = await ClsUser.getUsers(pagina?.toString(), filtro?.toString());
+    const { users, quantity } = await ClsUser.getUsers(`${req.user?.rango}`, pagina?.toString(), filtro?.toString());
+    users.map((user) => {
+      user.status = user.status == 1;
+      return user;
+    });
     return res.json({ users, success: "Datos obtenidos", quantity }).status(200);
   } catch (error) {
     console.log(error);
