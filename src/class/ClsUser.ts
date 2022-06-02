@@ -1,22 +1,26 @@
+import { Request } from "express";
+
 //Interfaces
 import IEstudiante from "../interface/IEstudiante";
 import IPersona from "../interface/IPerson";
 import IUser from "../interface/IUser";
-import { Request } from "express";
-
-//Database
-import { FieldPacket, RowDataPacket } from "mysql2";
-import { Pool } from "mysql2/promise";
-import { connect } from "../database";
 import IValidation from "../interface/IValidation";
+
+//mysql2 types
+import { FieldPacket, RowDataPacket } from "mysql2";
+
+// Clases
 import ClsExpR from "./ClsExpR";
 import ClsBDConexion from "./ClsBDConexion";
 
 class ClsUsuario {
   /*
     Description: This method validate Data Structure of User
+    @param req: request body
+    @param mode: Create or Edit
   */
-  validateUserData(req: Request, mode: string): IValidation {
+  validateUserData(req: Request, mode: "Create" | "Edit"): IValidation {
+    // Request body data
     const { name, lastname, email, dni, id_rango, address, status, password } = req.body;
     if (!name) return { message: "Falta el campo 'name'", validation: false };
     if (!lastname) return { message: "Falta el campo 'lastname'", validation: false };
@@ -29,10 +33,12 @@ class ClsUsuario {
       if (!password) return { message: "Falta el campo 'password'", validation: false };
     }
 
+    // RegEx validation
     const validationEmail = ClsExpR.validarCorreo(email);
     const validationName = ClsExpR.validarNombre(name);
     const validationLastname = ClsExpR.validarNombre(lastname);
     const validationDni = ClsExpR.validarLength(dni, 8);
+
     let validationPassword = { message: "Ok", validation: true };
     if (mode === "Create") validationPassword = ClsExpR.validarRequired(password);
     if (!validationEmail.validation) return { message: `${validationEmail.message} (email)`, validation: false };
@@ -45,13 +51,16 @@ class ClsUsuario {
 
   /*
     Description: This method validate Data Structure of Reset PWD Request
+    @param req: request body
   */
   validateResetPWDData(req: Request): IValidation {
+    // Request body data
     const { oldPassword, newPassword, repeatPassword } = req.body;
     if (!oldPassword) return { message: "Falta el campo 'oldPassword'", validation: false };
     if (!newPassword) return { message: "Falta el campo 'newPassword'", validation: false };
     if (!repeatPassword) return { message: "Falta el campo 'repeatPassword'", validation: false };
 
+    // RegEx validation
     const validationOldPassword = ClsExpR.validarRequired(oldPassword);
     const validationNewPassword = ClsExpR.validarRequired(newPassword);
     const validationRepeatPassword = ClsExpR.validarRequired(repeatPassword);
@@ -63,15 +72,29 @@ class ClsUsuario {
   }
 
   /*
-      Description: This method create a new user
+    Description: This method create a new user
+    @param status: user's status
+    @param email: user's email
+    @param password: user's password
+    @param dni: user's dni
+    @param name: user's name
+    @param lastname: user's lastname
+    @param address: user's address
+    @param id_rango: user's id_rango
+    @param photo: user's photo
   */
   async createUser(status: boolean, email: string, password: string, dni: string, name: string, lastname: string, address: string, id_rango: number, photo: string): Promise<IUser> {
     const sqlCreateUser = `CALL SP_CREATE_USER(?,?,?,?,?,?,?,?,?); SELECT @id as Person_Id; `;
+
     photo = photo ? `${photo}` : `defaultPhotoProfile.png`;
     const resCreateUser: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sqlCreateUser, [status ? 1 : 0, email, password, dni, id_rango, name, lastname, address, photo]);
     const id = resCreateUser[0][1][0].Person_Id;
-    const resRango: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_RANGO_BY_ID`(?)", [id_rango]);
+
+    const sqlGetRango = "CALL `SP_GET_RANGO_BY_ID`(?)";
+    const resRango: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sqlGetRango, [id_rango]);
     const rangoNombre = resRango[0][0][0];
+
+    // New User
     const usuario: IUser = {
       id,
       address,
@@ -88,7 +111,7 @@ class ClsUsuario {
   }
 
   /*
-      Description: This method get an user by email
+    Description: This method get an user by email
   */
   async getUserByEmail(email: string): Promise<IUser> {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER_BY_EMAIL`(?)", [email]);
@@ -107,12 +130,14 @@ class ClsUsuario {
     };
     return newUser;
   }
+
   /*
-      Description: This method get an user by id
+    Description: This method get an user by id
   */
-  async getUserById(id: string): Promise<IUser> {
+  async getUserById(id: number): Promise<IUser | undefined> {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_USER_BY_ID`(?)", [id]);
     const user = data[0][0][0];
+    if (!user) return undefined;
     const newUser: IUser = {
       id: user.id,
       name: user.name,
@@ -148,7 +173,7 @@ class ClsUsuario {
   }
 
   /*
-      Description: This method get users
+    Description: This method get users
   */
   async getUsers(pagina?: string, filtro?: string): Promise<{ users: RowDataPacket[]; quantity: number }> {
     pagina = pagina === undefined || pagina === "" ? "-1" : pagina;
