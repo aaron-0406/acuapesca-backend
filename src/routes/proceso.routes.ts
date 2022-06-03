@@ -2,7 +2,7 @@ import { NextFunction, Router, Request, Response } from "express";
 
 // Libs
 import { checkRoles, JWTAuth } from "../lib/auth.handler";
-import { createProcess, deleteProcess, editProcess, getProcessById, getProcess } from "../controllers/proceso.controller";
+import { createProcess, editProcess, getProcessById, getProcess, changeStatus } from "../controllers/proceso.controller";
 
 // Class
 import ClsExpR from "../class/ClsExpR";
@@ -35,6 +35,6 @@ router.get("/", JWTAuth, checkRoles("Administrador", "Gestor"), getProcess);
 router.get("/:id", JWTAuth, checkRoles("Administrador"), isStored, getProcessById);
 router.post("/", JWTAuth, checkRoles("Administrador"), validateData, createProcess);
 router.put("/:id", JWTAuth, checkRoles("Administrador"), validateData, isStored, editProcess);
-// router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStored, deleteProcess);
+router.patch("/:id", JWTAuth, checkRoles("Administrador"), isStored, changeStatus);
 
 export default router;

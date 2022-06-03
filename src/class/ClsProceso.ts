@@ -104,10 +104,11 @@ class ClsProceso {
   /*
     Description: This method create a new process
     @param id: process's id
+    @status id: process's status
   */
-  async deleteProcess(id: number): Promise<void> {
-    const sql = "CALL `SP_DELETE_PROCESS`(?);";
-    await ClsBDConexion.conn.query(sql, [id]);
+  async changeStatus(id: number, status: boolean): Promise<void> {
+    const sql = "CALL `SP_CHANGE_PROCESS_STATUS`(?,?);";
+    await ClsBDConexion.conn.query(sql, [id, status ? 1 : 0]);
   }
 }
 

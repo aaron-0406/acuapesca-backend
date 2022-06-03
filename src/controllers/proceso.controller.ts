@@ -54,11 +54,12 @@ export const editProcess = async (req: Request, res: Response) => {
 };
 
 // Delete Process Controller
-export const deleteProcess = async (req: Request, res: Response) => {
+export const changeStatus = async (req: Request, res: Response) => {
   try {
-    const { process } = req.body;
-    await ClsProceso.deleteProcess(process.id);
-    return res.json({ success: "Proceso elimiado" });
+    const { process, status } = req.body;
+    if (status === undefined) return res.json({ error: "No ha enviado el campo 'status'" });
+    await ClsProceso.changeStatus(process.id, status);
+    return res.json({ success: `Proceso ${status ? "Habilitado" : "Inhabilitado"}` });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
