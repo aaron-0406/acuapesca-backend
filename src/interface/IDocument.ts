@@ -1,3 +1,4 @@
+import IUser from "./IUser";
 export default interface IDocument {
   id?: number;
   code: string;
@@ -9,4 +10,6 @@ export default interface IDocument {
   nro_pages: number;
   procedure_id: number;
   file: string;
+  status: boolean;
+  users: IUser[];
 }

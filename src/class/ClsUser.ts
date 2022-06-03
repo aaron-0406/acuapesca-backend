@@ -174,6 +174,20 @@ class ClsUsuario {
     @param id_rango: user's id_rango
     @param photo: user's photo
   */
+
+  async getUsersByArrayId(ids: number[]) {
+    if (ids.length === 0) return [];
+    let usersId = "";
+    ids.map((id) => {
+      usersId += `${id},`;
+    });
+    usersId = usersId.slice(0, usersId.length - 1);
+    const sql = `SELECT name,lastname,rango,photo,id_rango,id,email FROM vwusers WHERE id IN (${usersId})`;
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql);
+    const users = data[0];
+    return users;
+  }
+
   async editUser(id: number, status: boolean, email: string, password: string, dni: string, name: string, lastname: string, address: string, id_rango: number, photo: string): Promise<IUser> {
     const sqlUpdateUser = "CALL `SP_UPDATE_USER`(?,?,?,?,?,?,?,?,?,?)";
     await ClsBDConexion.conn.query(sqlUpdateUser, [id, name, lastname, email, password, status ? 1 : 0, id_rango, dni, address, photo]);
