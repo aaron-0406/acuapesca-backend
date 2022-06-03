@@ -15,7 +15,7 @@ export const getDocuments = async (req: Request, res: Response) => {
     const procedure = await ClsProcedure.getProcedureById(idProcedure);
 
     if (!procedure) return res.json({ error: "No existe un procedimiento con esa id" }).status(400);
-    const documents = await ClsDocument.getDocuments(idProcedure);
+    const documents = await ClsDocument.getDocuments(idProcedure, `${req.user?.rango}`, parseInt(`${req.user?.id}`));
     documents.map((document) => {
       document.status = document.status === 1;
       return document;
@@ -35,7 +35,7 @@ export const getDocumentById = async (req: Request, res: Response) => {
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
     const idDocument = parseInt(id);
 
-    const document = await ClsDocument.getDocumentById(idDocument);
+    const document = await ClsDocument.getDocumentById(idDocument, `${req.user?.rango}`, parseInt(`${req.user?.id}`));
     if (!document) return res.json({ error: "No existe un documento con esa id" }).status(400);
 
     return res.json({ success: "Documento Encontrado", document });

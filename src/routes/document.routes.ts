@@ -30,7 +30,7 @@ const isStoredDocument = async (req: Request, res: Response, next: NextFunction)
   if (!validationId.validation) return res.json({ error: `La id enviada no es válida` }).status(400);
   const idDocument = parseInt(id);
 
-  const document = await ClsDocument.getDocumentById(idDocument);
+  const document = await ClsDocument.getDocumentById(idDocument, `${req.user?.rango}`, parseInt(`${req.user?.id}`));
   if (!document) {
     await deleteFile("../public/docs", `${req.file?.filename}`);
     return res.json({ error: "No existe un documento con esa id" }).status(400);
@@ -70,8 +70,8 @@ const multerFile = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-router.get("/:id", JWTAuth, checkRoles("Administrador", "Gestor","Directivo"), getDocuments);
-router.get("/single/:id", JWTAuth, checkRoles("Administrador"), getDocumentById);
+router.get("/:id", JWTAuth, checkRoles("Administrador", "Gestor", "Directivo"), getDocuments);
+router.get("/single/:id", JWTAuth, checkRoles("Administrador", "Gestor", "Directivo"), getDocumentById);
 router.post("/", JWTAuth, checkRoles("Administrador"), multerFile, validateDataCreate, isStoredProcedure, isStoredUsers, createDocument);
 router.put("/:id", JWTAuth, checkRoles("Administrador"), multerFile, validateDataEdit, isStoredDocument, isStoredProcedure, isStoredUsers, editDocument);
 // router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStoredDocument, deleteDocument);

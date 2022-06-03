@@ -45,15 +45,15 @@ class ClsDocument {
     return { message: "Ok", validation: true };
   }
 
-  async getDocuments(idProcedure: number): Promise<any[]> {
-    const sql = "CALL `SP_GET_DOCUMENTS`(?)";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [idProcedure]);
+  async getDocuments(idProcedure: number, rango: string, idUser: number): Promise<any[]> {
+    const sql = "CALL `SP_GET_DOCUMENTS`(?,?,?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [idProcedure, rango, idUser]);
     return data[0][0];
   }
 
-  async getDocumentById(id: number): Promise<IDocument | undefined> {
-    const sql = "CALL `SP_GET_DOCUMENT_BY_ID`(?)";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
+  async getDocumentById(id: number,rango: string, idUser: number): Promise<IDocument | undefined> {
+    const sql = "CALL `SP_GET_DOCUMENT_BY_ID`(?,?,?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id,rango,idUser]);
     const document = data[0][0][0];
     const users: IUser[] = data[0][1] as IUser[];
     if (!document) return undefined;
