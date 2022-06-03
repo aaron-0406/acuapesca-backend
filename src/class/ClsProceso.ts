@@ -23,7 +23,6 @@ class ClsProceso {
     const { name, code, status } = req.body;
     if (!name) return { message: "Falta el campo 'name'", validation: false };
     if (!code) return { message: "Falta el campo 'code'", validation: false };
-    if (status === undefined) return { message: "Falta el campo 'status'", validation: false };
     const validationName = ClsExpR.validarRequired(name);
     const validationCode = ClsExpR.validarRequired(code);
 
