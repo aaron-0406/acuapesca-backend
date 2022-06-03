@@ -35,6 +35,6 @@ router.get("/", JWTAuth, checkRoles("Administrador", "Gestor"), getProcess);
 router.get("/:id", JWTAuth, checkRoles("Administrador"), isStored, getProcessById);
 router.post("/", JWTAuth, checkRoles("Administrador"), validateData, createProcess);
 router.put("/:id", JWTAuth, checkRoles("Administrador"), validateData, isStored, editProcess);
-router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStored, deleteProcess);
+// router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStored, deleteProcess);
 
 export default router;

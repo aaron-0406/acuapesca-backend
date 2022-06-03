@@ -70,10 +70,10 @@ const multerFile = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-router.get("/:id", JWTAuth, checkRoles("Administrador", "Gestor"), getDocuments);
+router.get("/:id", JWTAuth, checkRoles("Administrador", "Gestor","Directivo"), getDocuments);
 router.get("/single/:id", JWTAuth, checkRoles("Administrador"), getDocumentById);
 router.post("/", JWTAuth, checkRoles("Administrador"), multerFile, validateDataCreate, isStoredProcedure, isStoredUsers, createDocument);
 router.put("/:id", JWTAuth, checkRoles("Administrador"), multerFile, validateDataEdit, isStoredDocument, isStoredProcedure, isStoredUsers, editDocument);
-router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStoredDocument, deleteDocument);
+// router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStoredDocument, deleteDocument);
 
 export default router;

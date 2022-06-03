@@ -21,8 +21,9 @@ class ClsDocument {
     if (status === undefined) return { message: "Falta el campo 'status'", validation: false };
     if (mode === "Create") {
       if (!req.file) return { message: "Falta el campo 'file'", validation: false };
+    } else {
+      if (!req.body.file) return { message: "Falta el campo 'file'", validation: false };
     }
-    if (!req.body.file) return { message: "Falta el campo 'file'", validation: false };
     const validationTitle = ClsExpR.validarRequired(title);
     const validationVersion = ClsExpR.validarDigitos(version);
     const validationCode = ClsExpR.validarRequired(code);
@@ -135,7 +136,7 @@ class ClsDocument {
     users: IUser[]
   ): Promise<IDocument> {
     const sqlUpdateDocument = "CALL `SP_UPDATE_DOCUMENT`(?,?,?,?,?,?,?,?,?,?,?);";
-    await ClsBDConexion.conn.query(sqlUpdateDocument, [id,title, version, code, effective_date, approval_date, name, nro_pages, procedure_id, status ? 1 : 0, file]);
+    await ClsBDConexion.conn.query(sqlUpdateDocument, [id, title, version, code, effective_date, approval_date, name, nro_pages, procedure_id, status ? 1 : 0, file]);
     const newDocument: IDocument = {
       approval_date,
       code,
