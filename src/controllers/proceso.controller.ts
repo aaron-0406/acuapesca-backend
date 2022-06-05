@@ -53,7 +53,7 @@ export const editProcess = async (req: Request, res: Response) => {
   }
 };
 
-// Delete Process Controller
+// Change Status Process Controller
 export const changeStatus = async (req: Request, res: Response) => {
   try {
     const { process, status } = req.body;

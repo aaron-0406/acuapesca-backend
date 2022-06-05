@@ -130,6 +130,8 @@ class ClsUsuario {
       dni: user.dni,
       address: user.address,
       photo: user.photo,
+      tag: user.tag,
+      tag_id: user.tag_id,
     };
     return newUser;
   }
@@ -157,6 +159,8 @@ class ClsUsuario {
       dni: user.dni,
       address: user.address,
       photo: user.photo,
+      tag: user.tag,
+      tag_id: user.tag_id,
     };
     return newUser;
   }

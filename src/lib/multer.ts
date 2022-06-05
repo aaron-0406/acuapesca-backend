@@ -32,7 +32,7 @@ const filterDocuments = async (req: any, file: any, cb: any) => {
   const mimetype = filetypes.test(file.mimetype);
   const extname = filetypes.test(path.extname(file.originalname));
   if (mimetype && extname) return cb(null, true);
-  cb("Archivo debe ser una foto.");
+  cb("Archivo debe ser un documento docx,xlsx,pptx,pdf.");
 };
 export const fotosPerfil = multer({ storage: storageFotosPerfil, fileFilter: filterFotos });
 export const archivos = multer({ storage: storageArchivos, fileFilter: filterDocuments });

@@ -7,6 +7,8 @@ export default interface IUser {
   rango: string;
   id_rango: number;
   address: string;
+  tag?: string;
+  tag_id?: number;
   status: boolean;
   photo: string;
 }

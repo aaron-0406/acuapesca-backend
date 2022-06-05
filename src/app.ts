@@ -68,7 +68,7 @@ export class App {
     this.app.use("/api/v1/user/", UserRouter);
     this.app.use("/api/v1/proceso/", ProcessRouter);
     this.app.use("/api/v1/procedimiento/", ProcedureRouter);
-    this.app.use("/api/v1/rango/", RangoRouter);
+    this.app.use("/api/v1/rol/", RangoRouter);
     this.app.use("/api/v1/document/", DocumentRouter);
     this.app.use(IndexRoutes);
   }
