@@ -20,7 +20,7 @@ class ClsProceso {
     Description: This method validate request body
   */
   validateData(req: Request): IValidation {
-    const { name, code, status } = req.body;
+    const { name, code } = req.body;
     if (!name) return { message: "Falta el campo 'name'", validation: false };
     if (!code) return { message: "Falta el campo 'code'", validation: false };
     const validationName = ClsExpR.validarRequired(name);
