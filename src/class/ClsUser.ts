@@ -215,6 +215,11 @@ class ClsUsuario {
     };
     return newUser;
   }
+  async editUserPhoto(id: number, photo: string): Promise<string> {
+    const sqlUpdateUser = "UPDATE Dato SET Dato_Alfanum = ? WHERE Persona_Id = ? AND Campo_Id = 7";
+    await ClsBDConexion.conn.query(sqlUpdateUser, [photo, id]);
+    return photo;
+  }
 
   /*
     Description: This method get users

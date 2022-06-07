@@ -1,7 +1,7 @@
 import { NextFunction, Router, Request, Response } from "express";
 
 // Controllers
-import { createUser, editUser, getUserById, getUsers } from "../controllers/user.controller";
+import { createUser, editUser, editUserPhoto, getUserById, getUsers } from "../controllers/user.controller";
 
 // Classes
 import ClsUser from "../class/ClsUser";
@@ -60,6 +60,16 @@ const isUserStored = async (req: Request, res: Response, next: NextFunction) => 
   next();
 };
 
+// Photo middleware
+const multerFile = (req: Request, res: Response, next: NextFunction) => {
+  fotosPerfil.single("photo")(req, res, (err) => {
+    if (err) return res.json({ error: err }); // A Multer error occurred when uploading.
+    if (!req.file) return res.json({ error: "Falta el campo 'photo'" });
+    req.body.file = req.file.filename;
+    next();
+  });
+};
+
 // Get Users Route
 router.get("/", JWTAuth, checkRoles("Administrador", "Gestor"), getUsers);
 
@@ -71,5 +81,8 @@ router.post("/", JWTAuth, checkRoles("Administrador"), validateDataCreate, creat
 
 // Edit User Route
 router.put("/:id", JWTAuth, checkRoles("Administrador"), validateDataEdit, isUserStored, editUser);
+
+// Edit User's Photo Route
+router.patch("/:id", JWTAuth, multerFile, editUserPhoto);
 
 export default router;

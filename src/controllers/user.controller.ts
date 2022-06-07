@@ -2,9 +2,12 @@ import { Request, Response } from "express";
 
 // Helpers
 import { deleteFile, encryptPassword } from "../lib/helpers";
+import { signToken } from "../lib/jwt";
 
 // User Class
 import ClsUser from "../class/ClsUser";
+
+import { config } from "../config/config";
 
 // Get Users Controller
 export const getUsers = async (req: Request, res: Response) => {
@@ -73,9 +76,33 @@ export const editUser = async (req: Request, res: Response) => {
 
     // Update User
     const user = await ClsUser.editUser(id, status, email, newPassword, dni, name, lastname, address, id_rango, editUser.photo);
-    if (!req.file) user.photo = editUser.photo;
 
     return res.json({ success: "Usuario editado correctamente", user });
+  } catch (error: any) {
+    console.log(error);
+    if (error.code === "ER_DUP_ENTRY") return res.json({ error: "El correo ya está registrado" });
+    return res.json({ error: "Ocurrió un error, intentelo más tarde" }).status(500);
+  }
+};
+
+// Edit User Photo Controller
+export const editUserPhoto = async (req: Request, res: Response) => {
+  try {
+    let { file } = req.body;
+
+    const id = req.user?.id;
+    const idUser = parseInt(`${id}`);
+    const user = await ClsUser.getUserById(idUser);
+    if (!user) return res.json({ error: "No existe un usuario con esa id" });
+
+    const photo = req.user?.photo;
+    if (`${photo}` !== "defaultPhotoProfile.png") await deleteFile("../public/user_photos", `${photo}`);
+
+    // // Update User
+    const photoUser = await ClsUser.editUserPhoto(parseInt(`${id}`), file);
+    user.photo = `${photoUser}`;
+    const token = signToken(user, `${config.jwtSecret}`);
+    return res.json({ success: "Foto modificada correctamente", photo: photoUser, token });
   } catch (error: any) {
     console.log(error);
     if (error.code === "ER_DUP_ENTRY") return res.json({ error: "El correo ya está registrado" });
