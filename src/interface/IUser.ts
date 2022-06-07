@@ -11,4 +11,5 @@ export default interface IUser {
   tag_id?: number;
   status: boolean;
   photo: string;
+  fullname?: string;
 }

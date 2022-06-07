@@ -83,10 +83,10 @@ class ClsUsuario {
     @param id_rango: user's id_rango
     @param photo: user's photo
   */
-  async createUser(status: boolean, email: string, password: string, dni: string, name: string, lastname: string, address: string, id_rango: number, photo: string): Promise<IUser> {
+  async createUser(status: boolean, email: string, password: string, dni: string, name: string, lastname: string, address: string, id_rango: number): Promise<IUser> {
     const sqlCreateUser = `CALL SP_CREATE_USER(?,?,?,?,?,?,?,?,?); SELECT @id as Person_Id; `;
 
-    photo = photo ? `${photo}` : `defaultPhotoProfile.png`;
+    const photo = `defaultPhotoProfile.png`;
     const resCreateUser: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sqlCreateUser, [status ? 1 : 0, email, password, dni, id_rango, name, lastname, address, photo]);
     const id = resCreateUser[0][1][0].Person_Id;
 

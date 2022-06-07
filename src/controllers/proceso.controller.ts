@@ -5,7 +5,7 @@ import ClsProceso from "../class/ClsProceso";
 export const getProcess = async (req: Request, res: Response) => {
   try {
     const procesos = await ClsProceso.getProcess(`${req.user?.rango}`);
-
+    
     procesos.map((proceso) => {
       proceso.status = proceso.status == 1;
       return proceso;

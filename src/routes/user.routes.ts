@@ -1,7 +1,7 @@
 import { NextFunction, Router, Request, Response } from "express";
 
 // Controllers
-import { createUser, editUser, getUsers } from "../controllers/user.controller";
+import { createUser, editUser, getUserById, getUsers } from "../controllers/user.controller";
 
 // Classes
 import ClsUser from "../class/ClsUser";
@@ -17,40 +17,15 @@ const router = Router();
 // Validate Request Body Create
 const validateDataCreate = async (req: Request, res: Response, next: NextFunction) => {
   const validate = ClsUser.validateUserData(req, "Create");
-  if (!validate.validation) {
-    // We delete the photo stored
-    if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
-    return res.json({ error: `${validate.message}` }).status(400);
-  }
+  if (!validate.validation) return res.json({ error: `${validate.message}` }).status(400);
   next();
 };
 
 // Validate Request Body Edit
 const validateDataEdit = async (req: Request, res: Response, next: NextFunction) => {
   const validate = ClsUser.validateUserData(req, "Edit");
-  if (!validate.validation) {
-    // We delete the photo stored
-    if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
-    return res.json({ error: `${validate.message}` }).status(400);
-  }
+  if (!validate.validation) return res.json({ error: `${validate.message}` }).status(400);
   next();
-};
-
-// Photo middleware
-const multerFotoCreate = (req: Request, res: Response, next: NextFunction) => {
-  fotosPerfil.single("photo")(req, res, (err) => {
-    if (err) return res.json({ error: err }); // A Multer error occurred when uploading.
-    req.body.photo = req.file?.filename;
-    next();
-  });
-};
-
-// Photo middleware
-const multerFotoEdit = (req: Request, res: Response, next: NextFunction) => {
-  fotosPerfil.single("photo")(req, res, (err) => {
-    if (err) return res.json({ error: err }); // A Multer error occurred when uploading.
-    next();
-  });
 };
 
 // Verifying if there is a user stored with that id
@@ -88,10 +63,13 @@ const isUserStored = async (req: Request, res: Response, next: NextFunction) => 
 // Get Users Route
 router.get("/", JWTAuth, checkRoles("Administrador", "Gestor"), getUsers);
 
+// Get User By Id Route
+router.get("/:id", JWTAuth, checkRoles("Administrador"), isUserStored, getUserById);
+
 // Create User Route
-router.post("/", JWTAuth, checkRoles("Administrador"), multerFotoCreate, validateDataCreate, createUser);
+router.post("/", JWTAuth, checkRoles("Administrador"), validateDataCreate, createUser);
 
 // Edit User Route
-router.put("/:id", JWTAuth, checkRoles("Administrador"), multerFotoEdit, validateDataEdit, isUserStored, editUser);
+router.put("/:id", JWTAuth, checkRoles("Administrador"), validateDataEdit, isUserStored, editUser);
 
 export default router;
