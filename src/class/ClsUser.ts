@@ -1,8 +1,6 @@
 import { Request } from "express";
 
 //Interfaces
-import IEstudiante from "../interface/IEstudiante";
-import IPersona from "../interface/IPerson";
 import IUser from "../interface/IUser";
 import IValidation from "../interface/IValidation";
 
@@ -145,7 +143,6 @@ class ClsUsuario {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
 
     const user = data[0][0][0];
-
     if (!user) return undefined;
 
     const newUser: IUser = {
@@ -200,7 +197,6 @@ class ClsUsuario {
     const resRango: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sqlGetRango, [id_rango]);
 
     const rangoNombre = resRango[0][0][0];
-
     const newUser: IUser = {
       id,
       name,
@@ -208,8 +204,8 @@ class ClsUsuario {
       email,
       status,
       id_rango,
-      rango: rangoNombre.Rango,
-      dni: dni,
+      rango: rangoNombre.name,
+      dni,
       address,
       photo,
     };
@@ -239,11 +235,9 @@ class ClsUsuario {
     const sql = "CALL `SP_GET_USERS`(?,?,?)";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [limit * parseInt(pagina), filtro, rango]);
     quantity = data[0][1][0].Cantidad;
-
     if (pagina === "-1") return { users: data[0][0], quantity }; //Todo el resultado
 
     const users = data[0][0].splice(page, limit); //Separado por paginas
-
     return { users, quantity };
   }
 
@@ -256,5 +250,15 @@ class ClsUsuario {
     const data: [any[]] = await ClsBDConexion.conn.query(sql, [id]);
     return data[0][0].photo;
   }
+  /*
+    Description: This method get photo's user
+    @param id : user's id
+    @param status : user's status
+  */
+  async changeStatus(id: number, status: boolean) {
+    const sql = "UPDATE Persona SET Persona_Estado = ? WHERE Persona_Id = ?";
+    await ClsBDConexion.conn.query(sql, [status ? 1 : 0, id]);
+  }
+
 }
 export default new ClsUsuario();

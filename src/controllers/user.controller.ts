@@ -53,7 +53,6 @@ export const createUser = async (req: Request, res: Response) => {
 
     // Saving in database
     const user = await ClsUser.createUser(status, email, newPassword, dni, name, lastname, address, id_rango);
-
     // Answer
     return res.json({ success: "Usuario creado", user }).status(201);
   } catch (error: any) {
@@ -64,19 +63,21 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
+
 // Edit User Controller
 export const editUser = async (req: Request, res: Response) => {
   try {
     let { name, lastname, email, dni, id_rango, password, address, status, editUser } = req.body;
     let { id } = editUser;
-
     //In case the password is in request body
     let newPassword = "";
-    if (password.length !== 0) newPassword = await encryptPassword(password);
+    if (password !== undefined) {
+      if (password.length !== 0) newPassword = await encryptPassword(password);
+    }
 
     // Update User
     const user = await ClsUser.editUser(id, status, email, newPassword, dni, name, lastname, address, id_rango, editUser.photo);
-
+    console.log(user);
     return res.json({ success: "Usuario editado correctamente", user });
   } catch (error: any) {
     console.log(error);
@@ -107,5 +108,17 @@ export const editUserPhoto = async (req: Request, res: Response) => {
     console.log(error);
     if (error.code === "ER_DUP_ENTRY") return res.json({ error: "El correo ya está registrado" });
     return res.json({ error: "Ocurrió un error, intentelo más tarde" }).status(500);
+  }
+};
+
+export const editUserStatus = async (req: Request, res: Response) => {
+  try {
+    const { editUser, status } = req.body;
+    if (status === undefined) return res.json({ error: "No ha enviado el campo 'status'" });
+    await ClsUser.changeStatus(editUser.id, status);
+    return res.json({ success: `Usuario ${status ? "Habilitado" : "Inhabilitado"}` });
+  } catch (error) {
+    console.log(error);
+    return res.json({ error: "Ocurrió un error, intentelo más tarde" });
   }
 };

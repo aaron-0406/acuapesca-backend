@@ -1,16 +1,16 @@
 import { NextFunction, Router, Request, Response } from "express";
 
 // Controllers
-import { createUser, editUser, editUserPhoto, getUserById, getUsers } from "../controllers/user.controller";
+import { createUser, editUser, editUserPhoto, editUserStatus, getUserById, getUsers } from "../controllers/user.controller";
 
 // Classes
 import ClsUser from "../class/ClsUser";
 import ClsExpR from "../class/ClsExpR";
 
 // Helpers
-import { deleteFile } from "../lib/helpers";
 import { fotosPerfil } from "..//lib/multer";
 import { checkRoles, JWTAuth } from "../lib/auth.handler";
+import ClsDocument from "../class/ClsDocument";
 
 const router = Router();
 
@@ -33,32 +33,23 @@ const isUserStored = async (req: Request, res: Response, next: NextFunction) => 
   const { id } = req.params;
 
   // In case they didn't send the id
-  if (!id) {
-    if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
-    return res.json({ error: "No ha enviado una id como parámetro" }).status(400);
-  }
+  if (!id) return res.json({ error: "No ha enviado una id como parámetro" }).status(400);
 
   // In case is not a number
   const validationId = ClsExpR.validarDigitos(id);
-  if (!validationId.validation) {
-    if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
-    return res.json({ error: `La id enviada no es válida` }).status(400);
-  }
+  if (!validationId.validation) return res.json({ error: `La id enviada no es válida` }).status(400);
 
   // Getting user in database
   const idUser = parseInt(id);
   const user = await ClsUser.getUserById(idUser);
-
   // If there is not a user stored
-  if (!user) {
-    if (req.file) await deleteFile("../public/user_photos", `${req.file?.filename}`);
-    return res.json({ error: "No hay un usuario registrado con ese id" }).status(400);
-  }
+  if (!user) return res.json({ error: "No hay un usuario registrado con ese id" }).status(400);
 
   // We put the user data in request body for the next function
   req.body.editUser = user;
   next();
 };
+
 
 // Photo middleware
 const multerFile = (req: Request, res: Response, next: NextFunction) => {
@@ -83,6 +74,9 @@ router.post("/", JWTAuth, checkRoles("Administrador"), validateDataCreate, creat
 router.put("/:id", JWTAuth, checkRoles("Administrador"), validateDataEdit, isUserStored, editUser);
 
 // Edit User's Photo Route
-router.patch("/:id", JWTAuth, multerFile, editUserPhoto);
+router.patch("/photo", JWTAuth, multerFile, editUserPhoto);
+
+// Edit User's Status Route
+router.patch("/status/:id", JWTAuth, checkRoles("Administrador"), isUserStored, editUserStatus);
 
 export default router;

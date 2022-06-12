@@ -51,9 +51,9 @@ class ClsDocument {
     return data[0][0];
   }
 
-  async getDocumentById(id: number,rango: string, idUser: number): Promise<IDocument | undefined> {
+  async getDocumentById(id: number, rango: string, idUser: number): Promise<IDocument | undefined> {
     const sql = "CALL `SP_GET_DOCUMENT_BY_ID`(?,?,?)";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id,rango,idUser]);
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id, rango, idUser]);
     const document = data[0][0][0];
     const users: IUser[] = data[0][1] as IUser[];
     if (!document) return undefined;
@@ -71,6 +71,28 @@ class ClsDocument {
       file: document.file,
       status: document.status == 1,
       users,
+    };
+    return newDocument;
+  }
+  async getDocumentByIdAdmin(id: number): Promise<IDocument | undefined> {
+    const sql = "CALL SP_GET_DOCUMENT_BY_ID_ADMIN(?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
+    const document = data[0][0][0];
+    if (!document) return undefined;
+
+    const newDocument: IDocument = {
+      id: document.id,
+      code: document.code,
+      version: document.version,
+      effective_date: document.effective_date,
+      approval_date: document.approval_date,
+      title: document.title,
+      name: document.name,
+      nro_pages: document.nro_pages,
+      procedure_id: document.procedure_id,
+      file: document.file,
+      status: document.status == 1,
+      users: [],
     };
     return newDocument;
   }

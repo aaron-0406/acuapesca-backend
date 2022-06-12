@@ -36,7 +36,7 @@ export const getProcedures = async (req: Request, res: Response) => {
 export const getProcedureById = async (req: Request, res: Response) => {
   try {
     const { procedure } = req.body;
-    return res.json({ success: "Procedimiento Encontrado", procedure });
+    return res.json({ success: "Documento Encontrado", procedure });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
@@ -48,7 +48,7 @@ export const createProcedure = async (req: Request, res: Response) => {
   try {
     const { code, title, status, process } = req.body;
     const procedure = await ClsProcedure.createProcedure(title, code, process.id, status);
-    return res.json({ success: "Procedimiento Creado", procedure });
+    return res.json({ success: "Documento Creado", procedure });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
@@ -60,7 +60,7 @@ export const editProcedure = async (req: Request, res: Response) => {
   try {
     const { code, title, status, process, procedure } = req.body;
     const procedureEdit = await ClsProcedure.editProcedure(procedure.id, title, code, process.id, status);
-    return res.json({ success: "Procedimiento Editado", procedureEdit });
+    return res.json({ success: "Documento Editado", procedureEdit });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
