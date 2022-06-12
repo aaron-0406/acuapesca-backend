@@ -60,7 +60,7 @@ export const editProcedure = async (req: Request, res: Response) => {
   try {
     const { code, title, status, process, procedure } = req.body;
     const procedureEdit = await ClsProcedure.editProcedure(procedure.id, title, code, process.id, status);
-    return res.json({ success: "Procedimiento Creado", procedureEdit });
+    return res.json({ success: "Procedimiento Editado", procedureEdit });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });
