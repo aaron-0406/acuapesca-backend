@@ -4,4 +4,5 @@ export default interface IMessage {
   id_emisor: number;
   text: string;
   date: string;
+  status: number;
 }

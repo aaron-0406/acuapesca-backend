@@ -24,7 +24,7 @@ class ClsChat {
   }
   async createMessage(message: IMessage) {
     const { id_emisor, id_receptor, text } = message;
-    const sql = "CALL `SP_INSERT_MESSAGE`(?,?,?,?); SELECT @id AS 'message_id'";
+    const sql = "CALL `SP_INSERT_MESSAGE`(?,?,?,?,?); SELECT @id AS 'message_id'";
     const fecha = moment(message.date).format("YYYY[-]MM[-]DD HH[:]mm[:]ss");
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [text, id_emisor, id_receptor, fecha]);
     message.id = data[0][1][0].procedure_id;
