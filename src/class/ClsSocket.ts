@@ -1,5 +1,4 @@
 import { Server, Socket } from "socket.io";
-import { v4 as uuidv4 } from "uuid";
 import chalk from "chalk";
 import jwt from "jsonwebtoken";
 import IMessage from "src/interface/IMessage";
@@ -16,25 +15,39 @@ interface IUserSocket {
 
 class ClsSocket {
   io: Server;
-  static usersOnline: IUserSocket[] = [];
   socket: Socket;
+  static usersOnline: IUserSocket[] = [];
+
   constructor(io: Server, socket: Socket) {
     this.socket = socket;
     this.io = io;
+
     try {
+      // Here is the user's token
       let token = socket.handshake.headers.authorization;
       token = token?.replace("Bearer ", "");
       const user: any = jwt.decode(`${token}`);
 
       log(chalk.bgBlack.green.bold(`Un usuario conectado ${user.name} ${user.id} ${socket.id}`));
 
+      // We add the user connected in this array
       ClsSocket.usersOnline.push({ id: user.id, name: user.name, socket_id: socket.id, socket: socket });
+
+      // When a user send a message
       socket.on("client:sendMessage", async (message: IMessage) => {
         const { id_receptor } = message;
         const newMessage = await ClsChat.createMessage(message);
         const socketId = this.getSocketById(id_receptor);
         socket.to(socketId).emit("server:sendMessage", newMessage);
       });
+
+      socket.on("client:typing", (contact: any) => {
+        const { id } = contact;
+        const socketId = this.getSocketById(id);
+        socket.to(socketId).emit("server:typing", user);
+      });
+
+      // When the user disconnect
       socket.on("disconnect", () => this.disconnect(socket, user));
     } catch (error) {}
   }
