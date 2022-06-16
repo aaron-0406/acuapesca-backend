@@ -31,7 +31,6 @@ class ClsSocket {
       ClsSocket.usersOnline.push({ id: user.id, name: user.name, socket_id: socket.id, socket: socket });
       socket.on("client:sendMessage", async (message: IMessage) => {
         const { id_receptor } = message;
-        console.log(message);
         const newMessage = await ClsChat.createMessage(message);
         const socketId = this.getSocketById(id_receptor);
         socket.to(socketId).emit("server:sendMessage", newMessage);

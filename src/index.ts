@@ -11,7 +11,6 @@ async function main() {
     },
   });
   chat(io);
-  // Sockets(io);
 }
 
 main();
