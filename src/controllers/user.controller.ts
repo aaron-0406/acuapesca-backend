@@ -52,7 +52,7 @@ export const createUser = async (req: Request, res: Response) => {
     const newPassword = await encryptPassword(password);
 
     // Saving in database
-    const user = await ClsUser.createUser(status, email, newPassword, dni, name, lastname, address, id_rango);
+    const user = await ClsUser.createUser(status, email, newPassword, dni, name, lastname, address, id_rango);   
     // Answer
     return res.json({ success: "Usuario creado", user }).status(201);
   } catch (error: any) {
