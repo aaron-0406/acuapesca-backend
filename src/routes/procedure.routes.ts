@@ -9,6 +9,7 @@ const router = Router();
 const validateData = (req: Request, res: Response, next: NextFunction) => {
   const validate = ClsProcedure.validateData(req);
   if (!validate.validation) return res.json({ error: `${validate.message}` }).status(400);
+  
   next();
 };
 

@@ -78,7 +78,8 @@ export class App {
   }
 
   async listen() {
-    await this.app.listen(this.app.get("port"));
+    const server = await this.app.listen(this.app.get("port"));
     console.log("Server on port ", this.app.get("port"));
+    return server;
   }
 }

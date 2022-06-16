@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
+import IProceso from "src/interface/IProceso";
 import ClsProceso from "../class/ClsProceso";
 
 // Get Process Controller
 export const getProcess = async (req: Request, res: Response) => {
   try {
     const procesos = await ClsProceso.getProcess(`${req.user?.rango}`);
-    
+
     procesos.map((proceso) => {
       proceso.status = proceso.status == 1;
       return proceso;
@@ -32,9 +33,9 @@ export const getProcessById = async (req: Request, res: Response) => {
 // Create Process Controller
 export const createProcess = async (req: Request, res: Response) => {
   try {
-    const { name, code } = req.body;
-    const process = await ClsProceso.createProcess(name, code, true);
-    return res.json({ success: "Proceso creado", process });
+    const { process } = req.body;
+    const newProcess = await ClsProceso.createProcess(process);
+    return res.json({ success: "Proceso creado", process: newProcess });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });

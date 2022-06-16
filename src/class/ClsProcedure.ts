@@ -69,24 +69,13 @@ class ClsProcedure {
 
   /*
     Description: This method creates a new procedure
-    @title : procedure's title
-    @code : procedure's code
-    @process_id : process's id
-    @status : process's status
+    @procedure : IProcedure
   */
-  async createProcedure(title: string, code: string, process_id: number, status: boolean): Promise<IProcedure> {
+  async createProcedure(procedure: IProcedure): Promise<IProcedure> {
+    const { title, code, process_id, status } = procedure;
     const sql = "CALL `SP_INSERT_PROCEDURE`(?,?,?,?); SELECT @id AS 'procedure_id'";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [title, code, process_id, status ? 1 : 0]);
-
-    // new procedure
-    const procedure: IProcedure = {
-      code,
-      process_id,
-      status,
-      title,
-      id: data[0][1][0].procedure_id,
-    };
-
+    procedure.id = data[0][1][0].procedure_id;
     return procedure;
   }
 

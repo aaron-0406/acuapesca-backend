@@ -25,3 +25,4 @@ export const deleteFile = async (pathname: string, filename: string) => {
     await fs.unlink(path.join(__dirname, pathname, filename));
   } catch (error) {}
 };
+

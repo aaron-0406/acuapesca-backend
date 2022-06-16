@@ -7,12 +7,16 @@ import { createProcess, editProcess, getProcessById, getProcess, changeStatus } 
 // Class
 import ClsExpR from "../class/ClsExpR";
 import ClsProceso from "../class/ClsProceso";
+import IProceso from "../interface/IProceso";
 
 const router = Router();
 
 const validateData = (req: Request, res: Response, next: NextFunction) => {
   const validate = ClsProceso.validateData(req);
   if (!validate.validation) return res.json({ error: `${validate.message}` }).status(400);
+  const { name, code } = req.body;
+  const newProcess: IProceso = { code, name, status: true };
+  req.body.process = newProcess;
   next();
 };
 

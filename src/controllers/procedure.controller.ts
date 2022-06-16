@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import ClsProceso from "../class/ClsProceso";
 import ClsExpR from "../class/ClsExpR";
 import ClsProcedure from "../class/ClsProcedure";
+import IProcedure from "../interface/IProcedure";
 
 // Get Procedures Controller
 export const getProcedures = async (req: Request, res: Response) => {
@@ -47,8 +48,9 @@ export const getProcedureById = async (req: Request, res: Response) => {
 export const createProcedure = async (req: Request, res: Response) => {
   try {
     const { code, title, status, process } = req.body;
-    const procedure = await ClsProcedure.createProcedure(title, code, process.id, status);
-    return res.json({ success: "Documento Creado", procedure });
+    const procedure: IProcedure = { code, title, status, process_id: process.id };
+    const newProcedure = await ClsProcedure.createProcedure(procedure);
+    return res.json({ success: "Documento Creado", procedure: newProcedure });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Ocurrió un error, intentelo más tarde" });

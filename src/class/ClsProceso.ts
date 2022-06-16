@@ -64,21 +64,14 @@ class ClsProceso {
 
   /*
     Description: This method create a new process
-    @param name: process's name
-    @param code: process's code
+    @param process: IProceso
   */
-  async createProcess(name: string, code: string, status: boolean): Promise<IProceso> {
+  async createProcess(process: IProceso): Promise<IProceso> {
+    const { name, code, status } = process;
     const sql = "CALL `SP_INSERT_PROCESS`(?,?,?); SELECT @id as 'id_process';";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [name, code, status ? 1 : 0]);
-
-    //New Process
-    const newProcess: IProceso = {
-      id: data[0][1][0].id_process,
-      name,
-      code,
-      status,
-    };
-    return newProcess;
+    process.id = data[0][1][0].id_process;
+    return process;
   }
 
   /*
