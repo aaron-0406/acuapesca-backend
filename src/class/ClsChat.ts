@@ -1,6 +1,6 @@
 import moment from "moment";
 import { FieldPacket, RowDataPacket } from "mysql2";
-import IMessage from "src/interface/IMessage";
+import IMessage from "../interface/IMessage";
 import ClsBDConexion from "./ClsBDConexion";
 
 class ClsChat {
