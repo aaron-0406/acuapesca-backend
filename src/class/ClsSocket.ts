@@ -8,9 +8,9 @@ const log = console.log;
 
 interface IUserSocket {
   socket_id: string;
-  socket: Socket;
   name: string;
   id: number;
+  status: string;
 }
 
 class ClsSocket {
@@ -31,31 +31,46 @@ class ClsSocket {
       log(chalk.bgBlack.green.bold(`Un usuario conectado ${user.name} ${user.id} ${socket.id}`));
 
       // We add the user connected in this array
-      ClsSocket.usersOnline.push({ id: user.id, name: user.name, socket_id: socket.id, socket: socket });
+      ClsSocket.usersOnline.push({ id: user.id, name: user.name, socket_id: socket.id, status: "En línea" });
 
       // When a user send a message
       socket.on("client:sendMessage", async (message: IMessage) => {
-        const { id_receptor } = message;
+        const { id_receptor, id_emisor } = message;
         const newMessage = await ClsChat.createMessage(message);
         const socketId = this.getSocketById(id_receptor);
+        const socketId2 = this.getSocketById(id_emisor);
+        io.to(socketId2).emit("server:sendMessage", newMessage);
         socket.to(socketId).emit("server:sendMessage", newMessage);
       });
 
       socket.on("client:typing", (contact: any) => {
         const { id } = contact;
         const socketId = this.getSocketById(id);
-        socket.to(socketId).emit("server:typing", user);
+        socket.to(socketId).emit("server:typing", user.id);
+      });
+
+      socket.on("server:receivedMessage", async (message: IMessage) => {
+        const socketId = this.getSocketById(message.id_emisor);
+        if (message.id_emisor !== user.id) {
+          const newMessage = await ClsChat.updateMessage(message, 2);
+          socket.to(socketId).emit("client:receivedMessage", newMessage);
+          return;
+        }
+        socket.to(socketId).emit("client:receivedMessage", message);
       });
 
       // When the user disconnect
-      socket.on("disconnect", () => this.disconnect(socket, user));
+      socket.on("disconnect", () => this.disconnect(socket, user, io));
+      io.emit("server:sendUsers", ClsSocket.usersOnline);
     } catch (error) {}
   }
 
-  disconnect(socket: Socket, user: any) {
+  disconnect(socket: Socket, user: any, io: Server) {
     this.removeFromArray(socket.id);
     log(chalk.bgBlack.red.bold(`${user.name} ${socket.id} disconnected`));
+    io.emit("server:disconnectUser", ClsSocket.usersOnline);
   }
+
   getSocketById = (id: number): string => {
     for (let i = 0; i < ClsSocket.usersOnline.length; i++) {
       const element = ClsSocket.usersOnline[i];
@@ -63,6 +78,7 @@ class ClsSocket {
     }
     return "";
   };
+
   removeFromArray = (socketId: string) => {
     const newUsers: any[] = [];
     ClsSocket.usersOnline = ClsSocket.usersOnline.map((user: any) => {
@@ -74,8 +90,6 @@ class ClsSocket {
   };
 }
 function chat(io: Server) {
-  io.on("connection", (socket: Socket) => {
-    new ClsSocket(io, socket);
-  });
+  io.on("connection", (socket: Socket) => new ClsSocket(io, socket));
 }
 export default chat;

@@ -27,7 +27,14 @@ class ClsChat {
     const sql = "CALL `SP_INSERT_MESSAGE`(?,?,?,?,?); SELECT @id AS 'message_id'";
     const fecha = moment(message.date).format("YYYY[-]MM[-]DD HH[:]mm[:]ss");
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [text, id_emisor, id_receptor, fecha, status]);
-    message.id = data[0][1][0].procedure_id;
+    message.id = data[0][1][0].message_id;
+    return message;
+  }
+  async updateMessage(message: IMessage, status: number) {
+    const { id } = message;
+    const sql = "CALL `SP_UPDATE_MESSAGE`(?,?)";
+    await ClsBDConexion.conn.query(sql, [id, status]);
+    message.status = status;
     return message;
   }
 }

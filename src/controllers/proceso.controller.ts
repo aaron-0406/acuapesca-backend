@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import IProceso from "src/interface/IProceso";
 import ClsProceso from "../class/ClsProceso";
 
 // Get Process Controller
