@@ -54,26 +54,23 @@ class ClsDocument {
     const sql = "CALL `SP_GET_DOCUMENTS`(?,?,?)";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [idProcedure, rango, idUser]);
     const documentos: IDocument[] = data[0][0] as IDocument[];
-   
+
     documentos.map((document) => {
       document.status = document.status === 1;
       return document;
     });
 
-
     const codes: IDoc[] = [];
+    
+    // Creatings codes object
     for (let i = 0; i < documentos.length; i++) {
       const even = (codes: IDoc) => codes.code === documentos[i].code;
-      if (!codes.some(even)) codes.push({ code: documentos[i].code, docs: [] });
+      if (!codes.some(even)) codes.push({ code: documentos[i].code, docs:  documentos.filter((document) => document.code === documentos[i].code) });
     }
 
-    if (rango === "Administrador") {
-      for (let i = 0; i < codes.length; i++) {
-        const filterDocuments = documentos.filter((document) => document.code === codes[i].code);
-        codes[i].docs = filterDocuments;
-      }
-      return codes;
-    }
+    if (rango === "Administrador") return codes;
+
+    for (let i = 0; i < codes.length; i++) {}
 
     // Adding the codes
 
