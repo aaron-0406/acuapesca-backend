@@ -6,6 +6,11 @@ import IValidation from "../interface/IValidation";
 import IUser from "../interface/IUser";
 import ClsExpR from "./ClsExpR";
 
+interface IDoc {
+  code: string;
+  docs: IDocument[];
+}
+
 class ClsDocument {
   validateData(req: Request, mode: "Create" | "Edit"): IValidation {
     const { code, version, effective_date, approval_date, title, name, nro_pages, permisos, status, procedure_id } = req.body;
@@ -45,10 +50,34 @@ class ClsDocument {
     return { message: "Ok", validation: true };
   }
 
-  async getDocuments(idProcedure: number, rango: string, idUser: number): Promise<any[]> {
+  async getDocuments(idProcedure: number, rango: string, idUser: number): Promise<IDoc[]> {
     const sql = "CALL `SP_GET_DOCUMENTS`(?,?,?)";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [idProcedure, rango, idUser]);
-    return data[0][0];
+    const documentos: IDocument[] = data[0][0] as IDocument[];
+   
+    documentos.map((document) => {
+      document.status = document.status === 1;
+      return document;
+    });
+
+
+    const codes: IDoc[] = [];
+    for (let i = 0; i < documentos.length; i++) {
+      const even = (codes: IDoc) => codes.code === documentos[i].code;
+      if (!codes.some(even)) codes.push({ code: documentos[i].code, docs: [] });
+    }
+
+    if (rango === "Administrador") {
+      for (let i = 0; i < codes.length; i++) {
+        const filterDocuments = documentos.filter((document) => document.code === codes[i].code);
+        codes[i].docs = filterDocuments;
+      }
+      return codes;
+    }
+
+    // Adding the codes
+
+    return [];
   }
 
   async getDocumentById(id: number, rango: string, idUser: number): Promise<IDocument | undefined> {

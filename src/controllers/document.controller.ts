@@ -16,10 +16,7 @@ export const getDocuments = async (req: Request, res: Response) => {
 
     if (!procedure) return res.json({ error: "No existe un procedimiento con esa id" }).status(400);
     const documents = await ClsDocument.getDocuments(idProcedure, `${req.user?.rango}`, parseInt(`${req.user?.id}`));
-    documents.map((document) => {
-      document.status = document.status === 1;
-      return document;
-    });
+   
     return res.json({ success: "Datos obtenidos", documents });
   } catch (error) {
     console.log(error);
@@ -48,7 +45,19 @@ export const getDocumentById = async (req: Request, res: Response) => {
 export const createDocument = async (req: Request, res: Response) => {
   try {
     const { code, version, effective_date, approval_date, title, name, nro_pages, status, procedure_id, users } = req.body;
-    const document = await ClsDocument.createDocument(title, version, code, effective_date, approval_date, name, nro_pages, procedure_id, status === "true", `${req.file?.filename}`, users);
+    const document = await ClsDocument.createDocument(
+      title,
+      parseInt(version),
+      code,
+      effective_date,
+      approval_date,
+      name,
+      parseInt(nro_pages),
+      procedure_id,
+      status === "true",
+      `${req.file?.filename}`,
+      users
+    );
     return res.json({ success: "Documento Creado", document });
   } catch (error) {
     console.log(error);

@@ -10,6 +10,6 @@ export default interface IDocument {
   nro_pages: number;
   procedure_id: number;
   file: string;
-  status: boolean;
+  status: boolean | number;
   users: IUser[];
 }
