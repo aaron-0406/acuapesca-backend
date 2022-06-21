@@ -19,7 +19,6 @@ class ClsDocument {
     if (!code) return { message: "Falta el campo 'code'", validation: false };
     if (!effective_date) return { message: "Falta el campo 'effective_date'", validation: false };
     if (!approval_date) return { message: "Falta el campo 'approval_date'", validation: false };
-    if (!name) return { message: "Falta el campo 'name'", validation: false };
     if (!nro_pages) return { message: "Falta el campo 'nro_pages'", validation: false };
     if (!permisos) return { message: "Falta el campo 'permisos'", validation: false };
     if (!procedure_id) return { message: "Falta el campo 'procedure_id'", validation: false };
@@ -34,7 +33,6 @@ class ClsDocument {
     const validationCode = ClsExpR.validarRequired(code);
     const validationEffectiveDate = ClsExpR.validarRequired(effective_date);
     const validationApprovalDate = ClsExpR.validarRequired(approval_date);
-    const validationName = ClsExpR.validarRequired(name);
     const validationNroPages = ClsExpR.validarDigitos(nro_pages);
     const validationProcedureId = ClsExpR.validarDigitos(procedure_id);
 
@@ -43,7 +41,6 @@ class ClsDocument {
     if (!validationCode.validation) return { message: `${validationTitle.message} (code)`, validation: false };
     if (!validationEffectiveDate.validation) return { message: `${validationTitle.message} (effective_date)`, validation: false };
     if (!validationApprovalDate.validation) return { message: `${validationTitle.message} (approval_date)`, validation: false };
-    if (!validationName.validation) return { message: `${validationTitle.message} (name)`, validation: false };
     if (!validationNroPages.validation) return { message: `${validationTitle.message} (nro_pages)`, validation: false };
     if (!validationProcedureId.validation) return { message: `El id del proceso es inválido (process_id)`, validation: false };
     req.body.permisos = JSON.parse(req.body.permisos);
