@@ -77,8 +77,6 @@ class ClsDocument {
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [code, rango, idUser]);
     const document: any[] = data[0][0] as any[];
     const users: any[] = data[0][1] as any[];
-    console.log(document);
-    console.log(users);
     if (!document) return undefined;
 
     for (let i = 0; i < document.length; i++) {
