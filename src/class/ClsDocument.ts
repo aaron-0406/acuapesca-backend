@@ -89,7 +89,6 @@ class ClsDocument {
       effective_date: document.effective_date,
       approval_date: document.approval_date,
       title: document.title,
-      name: document.name,
       nro_pages: document.nro_pages,
       procedure_id: document.procedure_id,
       file: document.file,
@@ -111,7 +110,6 @@ class ClsDocument {
       effective_date: document.effective_date,
       approval_date: document.approval_date,
       title: document.title,
-      name: document.name,
       nro_pages: document.nro_pages,
       procedure_id: document.procedure_id,
       file: document.file,
@@ -127,7 +125,6 @@ class ClsDocument {
     code: string,
     effective_date: string,
     approval_date: string,
-    name: string,
     nro_pages: number,
     procedure_id: number,
     status: boolean,
@@ -135,14 +132,13 @@ class ClsDocument {
     users: IUser[]
   ): Promise<IDocument> {
     // Store the document
-    const sql = "CALL `SP_INSERT_DOCUMENT`(?,?,?,?,?,?,?,?,?,?); SELECT @id AS 'document_id'";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [title, version, code, effective_date, approval_date, name, nro_pages, procedure_id, status ? 1 : 0, file]);
+    const sql = "CALL `SP_INSERT_DOCUMENT`(?,?,?,?,?,?,?,?,?); SELECT @id AS 'document_id'";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [title, version, code, effective_date, approval_date,  nro_pages, procedure_id, status ? 1 : 0, file]);
 
     const newDocument: IDocument = {
       approval_date,
       code,
       effective_date,
-      name,
       nro_pages,
       procedure_id,
       title,
@@ -174,20 +170,18 @@ class ClsDocument {
     code: string,
     effective_date: string,
     approval_date: string,
-    name: string,
     nro_pages: number,
     procedure_id: number,
     status: boolean,
     file: string,
     users: IUser[]
   ): Promise<IDocument> {
-    const sqlUpdateDocument = "CALL `SP_UPDATE_DOCUMENT`(?,?,?,?,?,?,?,?,?,?,?);";
-    await ClsBDConexion.conn.query(sqlUpdateDocument, [id, title, version, code, effective_date, approval_date, name, nro_pages, procedure_id, status ? 1 : 0, file]);
+    const sqlUpdateDocument = "CALL `SP_UPDATE_DOCUMENT`(?,?,?,?,?,?,?,?,?,?);";
+    await ClsBDConexion.conn.query(sqlUpdateDocument, [id, title, version, code, effective_date, approval_date,  nro_pages, procedure_id, status ? 1 : 0, file]);
     const newDocument: IDocument = {
       approval_date,
       code,
       effective_date,
-      name,
       nro_pages,
       procedure_id,
       title,

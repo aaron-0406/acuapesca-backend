@@ -16,7 +16,7 @@ export const getDocuments = async (req: Request, res: Response) => {
 
     if (!procedure) return res.json({ error: "No existe un procedimiento con esa id" }).status(400);
     const documents = await ClsDocument.getDocuments(idProcedure, `${req.user?.rango}`, parseInt(`${req.user?.id}`));
-   
+
     return res.json({ success: "Datos obtenidos", documents });
   } catch (error) {
     console.log(error);
@@ -44,14 +44,13 @@ export const getDocumentById = async (req: Request, res: Response) => {
 
 export const createDocument = async (req: Request, res: Response) => {
   try {
-    const { code, version, effective_date, approval_date, title, name, nro_pages, status, procedure_id, users } = req.body;
+    const { code, version, effective_date, approval_date, title, nro_pages, status, procedure_id, users } = req.body;
     const document = await ClsDocument.createDocument(
       title,
       parseInt(version),
       code,
       effective_date,
       approval_date,
-      name,
       parseInt(nro_pages),
       procedure_id,
       status === "true",
@@ -67,12 +66,12 @@ export const createDocument = async (req: Request, res: Response) => {
 };
 export const editDocument = async (req: Request, res: Response) => {
   try {
-    let { document, procedure, file, users, title, version, code, effective_date, approval_date, name, nro_pages, status } = req.body;
+    let { document, procedure, file, users, title, version, code, effective_date, approval_date, nro_pages, status } = req.body;
     if (req.file) {
       await deleteFile("../public/docs", `${document.file}`);
       file = req.file.filename;
     }
-    const documentEdited = await ClsDocument.editDocument(document.id, title, version, code, effective_date, approval_date, name, nro_pages, procedure.id, status === "true", file, users);
+    const documentEdited = await ClsDocument.editDocument(document.id, title, version, code, effective_date, approval_date, nro_pages, procedure.id, status === "true", file, users);
     return res.json({ success: "Documento Editado", document: documentEdited });
   } catch (error) {
     console.log(error);
