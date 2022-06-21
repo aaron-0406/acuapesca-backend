@@ -65,7 +65,7 @@ class ClsDocument {
       if (!codes.some(even)) codes.push({ code: documentos[i].code, docs: documentos.filter((document) => document.code === documentos[i].code) });
     }
 
-    if (rango === "Administrador") return codes;
+    // if (rango === "Administrador") return codes;
 
     for (let i = 0; i < codes.length; i++) codes[i].docs = [codes[i].docs[codes[i].docs.length - 1]];
 
