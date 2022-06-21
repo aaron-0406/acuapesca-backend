@@ -72,29 +72,23 @@ class ClsDocument {
     return codes;
   }
 
-  async getDocumentByCode(code: string, rango: string, idUser: number): Promise<IDocument | undefined> {
+  async getDocumentByCode(code: string, rango: string, idUser: number): Promise<any | undefined> {
     const sql = "CALL `SP_GET_DOCUMENT_BY_CODE`(?,?,?)";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [code, rango, idUser]);
-    const document = data[0][0];
-    const users: IUser[] = data[0][1] as IUser[];
+    const document: any[] = data[0][0] as any[];
+    const users: any[] = data[0][1] as any[];
     console.log(document);
     console.log(users);
     if (!document) return undefined;
 
-    // const newDocument: IDocument = {
-    //   id: document.id,
-    //   code: document.code,
-    //   version: document.version,
-    //   effective_date: document.effective_date,
-    //   approval_date: document.approval_date,
-    //   title: document.title,
-    //   nro_pages: document.nro_pages,
-    //   procedure_id: document.procedure_id,
-    //   file: document.file,
-    //   status: document.status == 1,
-    //   users,
-    // };
-    return undefined;
+    for (let i = 0; i < document.length; i++) {
+      const element = document[i];
+      element.permisos = users.filter((item) => item.documento_id === element.id);
+      const newIds: number[] = [];
+      for (let j = 0; j < element.permisos.length; j++) newIds.push(element.permisos[j].id);
+      element.permisos = newIds;
+    }
+    return document;
   }
   async getDocumentByIdAdmin(id: number): Promise<IDocument | undefined> {
     const sql = "CALL SP_GET_DOCUMENT_BY_ID_ADMIN(?)";
