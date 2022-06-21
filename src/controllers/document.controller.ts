@@ -26,13 +26,12 @@ export const getDocuments = async (req: Request, res: Response) => {
 
 export const getDocumentById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { code } = req.params;
 
-    const validationId = ClsExpR.validarDigitos(id);
-    if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
-    const idDocument = parseInt(id);
+    const validationCode = ClsExpR.validarRequired(code);
+    if (!validationCode.validation) return res.json({ error: `El codigo es requerido` });
 
-    const document = await ClsDocument.getDocumentById(idDocument, `${req.user?.rango}`, parseInt(`${req.user?.id}`));
+    const document = await ClsDocument.getDocumentByCode(code, `${req.user?.rango}`, parseInt(`${req.user?.id}`));
     if (!document) return res.json({ error: "No existe un documento con esa id" }).status(400);
 
     return res.json({ success: "Documento Encontrado", document });

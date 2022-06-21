@@ -10,5 +10,5 @@ export default interface IDocument {
   procedure_id: number;
   file: string;
   status: boolean | number;
-  users: IUser[];
+  permisos: number[];
 }

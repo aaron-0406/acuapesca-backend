@@ -72,27 +72,29 @@ class ClsDocument {
     return codes;
   }
 
-  async getDocumentById(id: number, rango: string, idUser: number): Promise<IDocument | undefined> {
-    const sql = "CALL `SP_GET_DOCUMENT_BY_ID`(?,?,?)";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id, rango, idUser]);
-    const document = data[0][0][0];
+  async getDocumentByCode(code: string, rango: string, idUser: number): Promise<IDocument | undefined> {
+    const sql = "CALL `SP_GET_DOCUMENT_BY_CODE`(?,?,?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [code, rango, idUser]);
+    const document = data[0][0];
     const users: IUser[] = data[0][1] as IUser[];
+    console.log(document);
+    console.log(users);
     if (!document) return undefined;
 
-    const newDocument: IDocument = {
-      id: document.id,
-      code: document.code,
-      version: document.version,
-      effective_date: document.effective_date,
-      approval_date: document.approval_date,
-      title: document.title,
-      nro_pages: document.nro_pages,
-      procedure_id: document.procedure_id,
-      file: document.file,
-      status: document.status == 1,
-      users,
-    };
-    return newDocument;
+    // const newDocument: IDocument = {
+    //   id: document.id,
+    //   code: document.code,
+    //   version: document.version,
+    //   effective_date: document.effective_date,
+    //   approval_date: document.approval_date,
+    //   title: document.title,
+    //   nro_pages: document.nro_pages,
+    //   procedure_id: document.procedure_id,
+    //   file: document.file,
+    //   status: document.status == 1,
+    //   users,
+    // };
+    return undefined;
   }
   async getDocumentByIdAdmin(id: number): Promise<IDocument | undefined> {
     const sql = "CALL SP_GET_DOCUMENT_BY_ID_ADMIN(?)";
@@ -111,7 +113,7 @@ class ClsDocument {
       procedure_id: document.procedure_id,
       file: document.file,
       status: document.status == 1,
-      users: [],
+      permisos: [],
     };
     return newDocument;
   }
@@ -126,11 +128,11 @@ class ClsDocument {
     procedure_id: number,
     status: boolean,
     file: string,
-    users: IUser[]
+    users: number[]
   ): Promise<IDocument> {
     // Store the document
     const sql = "CALL `SP_INSERT_DOCUMENT`(?,?,?,?,?,?,?,?,?); SELECT @id AS 'document_id'";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [title, version, code, effective_date, approval_date,  nro_pages, procedure_id, status ? 1 : 0, file]);
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [title, version, code, effective_date, approval_date, nro_pages, procedure_id, status ? 1 : 0, file]);
 
     const newDocument: IDocument = {
       approval_date,
@@ -143,7 +145,7 @@ class ClsDocument {
       version,
       status,
       id: data[0][1][0].document_id,
-      users: [],
+      permisos: [],
     };
 
     // Store the permissions
@@ -152,11 +154,11 @@ class ClsDocument {
 
       let values = "";
 
-      users.map((user) => (values += `(${user.id},${newDocument.id}),`));
+      users.map((userId) => (values += `(${userId},${newDocument.id}),`));
       values = values.slice(0, values.length - 1);
       sqlPermisos += values;
       await ClsBDConexion.conn.query(sqlPermisos);
-      newDocument.users = users;
+      newDocument.permisos = users;
     }
     return newDocument;
   }
@@ -171,10 +173,10 @@ class ClsDocument {
     procedure_id: number,
     status: boolean,
     file: string,
-    users: IUser[]
+    permisos: number[]
   ): Promise<IDocument> {
     const sqlUpdateDocument = "CALL `SP_UPDATE_DOCUMENT`(?,?,?,?,?,?,?,?,?,?);";
-    await ClsBDConexion.conn.query(sqlUpdateDocument, [id, title, version, code, effective_date, approval_date,  nro_pages, procedure_id, status ? 1 : 0, file]);
+    await ClsBDConexion.conn.query(sqlUpdateDocument, [id, title, version, code, effective_date, approval_date, nro_pages, procedure_id, status ? 1 : 0, file]);
     const newDocument: IDocument = {
       approval_date,
       code,
@@ -186,19 +188,19 @@ class ClsDocument {
       version,
       status,
       id,
-      users,
+      permisos,
     };
 
-    if (users.length !== 0) {
+    if (permisos.length !== 0) {
       let sqlPermisos = `INSERT INTO Permiso (Usuario_Id,Documento_Id) VALUES `;
 
       let values = "";
 
-      users.map((user) => (values += `(${user.id},${newDocument.id}),`));
+      permisos.map((permiso) => (values += `(${permiso},${newDocument.id}),`));
       values = values.slice(0, values.length - 1);
       sqlPermisos += values;
       await ClsBDConexion.conn.query(sqlPermisos);
-      newDocument.users = users;
+      newDocument.permisos = permisos;
     }
 
     return newDocument;

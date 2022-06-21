@@ -183,7 +183,7 @@ class ClsUsuario {
       usersId += `${id},`;
     });
     usersId = usersId.slice(0, usersId.length - 1);
-    const sql = `SELECT name,lastname,rango,photo,id_rango,id,email FROM vwusers WHERE id IN (${usersId})`;
+    const sql = `SELECT id FROM vwusers WHERE id IN (${usersId})`;
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql);
     const users = data[0];
     return users;
