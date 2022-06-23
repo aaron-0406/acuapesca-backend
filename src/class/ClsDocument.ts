@@ -122,6 +122,17 @@ class ClsDocument {
     file: string,
     permisos: number[]
   ): Promise<IDocument> {
+    const sqlCount = `SELECT COUNT(*) AS 'cantidad' FROM Documento WHERE Documento_Codigo = '${code}'`;
+    const dataCount = await ClsBDConexion.conn.query(sqlCount);
+    const cantidadDocs = dataCount[0][0].cantidad;
+    if (cantidadDocs > 1) {
+      const sqlMin = `SELECT MIN(Documento_Id) AS 'id' FROM Documento WHERE Documento_Codigo = '${code}'`;
+      const dataMin = await ClsBDConexion.conn.query(sqlMin);
+      const idDelete = dataMin[0][0].id;
+      console.log(idDelete);
+      const sqlDelete = `DELETE FROM Documento WHERE Documento_Id = '${idDelete}'`;
+      await ClsBDConexion.conn.query(sqlDelete);
+    }
     // Store the document
     const sql = "CALL `SP_INSERT_DOCUMENT`(?,?,?,?,?,?,?,?,?); SELECT @id AS 'document_id'";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [title, version, code, effective_date, approval_date, nro_pages, procedure_id, status ? 1 : 0, file]);
