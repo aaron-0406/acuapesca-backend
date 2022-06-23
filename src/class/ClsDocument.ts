@@ -120,7 +120,7 @@ class ClsDocument {
     procedure_id: number,
     status: boolean,
     file: string,
-    users: number[]
+    permisos: number[]
   ): Promise<IDocument> {
     // Store the document
     const sql = "CALL `SP_INSERT_DOCUMENT`(?,?,?,?,?,?,?,?,?); SELECT @id AS 'document_id'";
@@ -141,16 +141,16 @@ class ClsDocument {
     };
 
     // Store the permissions
-    if (users.length !== 0) {
+    if (permisos.length !== 0) {
       let sqlPermisos = `INSERT INTO Permiso (Usuario_Id,Documento_Id) VALUES `;
 
       let values = "";
 
-      users.map((userId) => (values += `(${userId},${newDocument.id}),`));
+      permisos.map((userId) => (values += `(${userId},${newDocument.id}),`));
       values = values.slice(0, values.length - 1);
       sqlPermisos += values;
       await ClsBDConexion.conn.query(sqlPermisos);
-      newDocument.permisos = users;
+      newDocument.permisos = permisos;
     }
     return newDocument;
   }
