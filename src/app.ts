@@ -17,6 +17,7 @@ import RangoRouter from "./routes/rango.routes";
 import LogRouter from "./routes/log.routes";
 import DocumentRouter from "./routes/document.routes";
 import ChatRouter from "./routes/chat.routes";
+import ConfigRouter from "./routes/config.routes";
 
 import ClsBDConexion from "./class/ClsBDConexion";
 
@@ -74,6 +75,7 @@ export class App {
     this.app.use("/api/v1/log/", LogRouter);
     this.app.use("/api/v1/chat/", ChatRouter);
     this.app.use("/api/v1/document/", DocumentRouter);
+    this.app.use("/api/v1/config/", ConfigRouter);
     this.app.use(IndexRoutes);
   }
 

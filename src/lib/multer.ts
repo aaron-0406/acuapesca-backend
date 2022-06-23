@@ -26,6 +26,13 @@ const storageArchivos = multer.diskStorage({
     cb(null, `${uuidv4()}${file.originalname}`);
   },
 });
+// Middleware for files
+const storagePhotoProcess = multer.diskStorage({
+  destination: path.join(__dirname, "../public/process_photo"),
+  filename: (req, file, cb) => {
+    cb(null, `${uuidv4()}${file.originalname}`);
+  },
+});
 // Filter documents
 const filterDocuments = async (req: any, file: any, cb: any) => {
   const filetypes = /DOC|doc|DOCX|docx|xls|XLS|XLSX|xlsx|ppt|PPT|PPTX|pptx|PDF|pdf/;
@@ -36,3 +43,4 @@ const filterDocuments = async (req: any, file: any, cb: any) => {
 };
 export const fotosPerfil = multer({ storage: storageFotosPerfil, fileFilter: filterFotos });
 export const archivos = multer({ storage: storageArchivos, fileFilter: filterDocuments });
+export const fotoProcess = multer({ storage: storagePhotoProcess, fileFilter: filterFotos });
