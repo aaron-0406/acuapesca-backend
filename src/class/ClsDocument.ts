@@ -72,9 +72,9 @@ class ClsDocument {
     return codes;
   }
 
-  async getDocumentByCode(code: string, rango: string, idUser: number): Promise<any | undefined> {
-    const sql = "CALL `SP_GET_DOCUMENT_BY_CODE`(?,?,?)";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [code, rango, idUser]);
+  async getDocumentByCode(code: string, rango: string, idUser: number, id_procedure: number): Promise<any | undefined> {
+    const sql = "CALL `SP_GET_DOCUMENT_BY_CODE_AND_PROCEDURE_ID`(?,?,?,?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [code, id_procedure, rango, idUser]);
     const document: any[] = data[0][0] as any[];
     const users: any[] = data[0][1] as any[];
     if (!document) return undefined;
