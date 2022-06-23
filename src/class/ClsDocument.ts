@@ -3,7 +3,6 @@ import ClsBDConexion from "./ClsBDConexion";
 import { Request } from "express";
 import IDocument from "../interface/IDocument";
 import IValidation from "../interface/IValidation";
-import IUser from "../interface/IUser";
 import ClsExpR from "./ClsExpR";
 
 interface IDoc {
@@ -122,11 +121,11 @@ class ClsDocument {
     file: string,
     permisos: number[]
   ): Promise<IDocument> {
-    const sqlCount = `SELECT COUNT(*) AS 'cantidad' FROM Documento WHERE Documento_Codigo = '${code}'`;
+    const sqlCount = `SELECT COUNT(*) AS 'cantidad' FROM Documento WHERE Documento_Codigo = '${code}' AND Procedimiento_Id = '${procedure_id}'`;
     const dataCount = await ClsBDConexion.conn.query(sqlCount);
     const cantidadDocs = dataCount[0][0].cantidad;
     if (cantidadDocs > 1) {
-      const sqlMin = `SELECT MIN(Documento_Id) AS 'id' FROM Documento WHERE Documento_Codigo = '${code}'`;
+      const sqlMin = `SELECT MIN(Documento_Id) AS 'id' FROM Documento WHERE Documento_Codigo = '${code}' AND Procedimiento_Id = '${procedure_id}'`;
       const dataMin = await ClsBDConexion.conn.query(sqlMin);
       const idDelete = dataMin[0][0].id;
       console.log(idDelete);
