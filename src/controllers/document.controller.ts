@@ -12,7 +12,7 @@ export const getDocuments = async (req: Request, res: Response) => {
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` });
     const idProcedure = parseInt(id);
 
-    const procedure = await ClsProcedure.getProcedureById(idProcedure);
+    const procedure = await ClsProcedure.getProcedureById(idProcedure,`${req.user?.rango}`);
 
     if (!procedure) return res.json({ error: "No existe un procedimiento con esa id" }).status(400);
     const documents = await ClsDocument.getDocuments(idProcedure, `${req.user?.rango}`, parseInt(`${req.user?.id}`));

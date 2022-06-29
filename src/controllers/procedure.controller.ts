@@ -17,7 +17,7 @@ export const getProcedures = async (req: Request, res: Response) => {
     if (!validationId.validation) return res.json({ error: `La id enviada no es válida` }).status(400);
     const idProcess = parseInt(id);
 
-    const process = await ClsProceso.getProccessById(idProcess);
+    const process = await ClsProceso.getProccessById(idProcess,`${req.user?.rango}`);
 
     if (!process) return res.json({ error: "No existe un proceso con esa id" }).status(400);
 

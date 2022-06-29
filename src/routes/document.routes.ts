@@ -46,7 +46,7 @@ const isStoredProcedure = async (req: Request, res: Response, next: NextFunction
   if (!validationId.validation) return res.json({ error: `La id enviada no es válida` }).status(400);
   const idProcedure = parseInt(procedure_id);
 
-  const procedure = await ClsProcedure.getProcedureById(idProcedure);
+  const procedure = await ClsProcedure.getProcedureById(idProcedure,`${req.user?.rango}`);
   if (!procedure) {
     await deleteFile("../public/docs", `${req.file?.filename}`);
     return res.json({ error: "No existe un procedimiento con esa id" }).status(400);

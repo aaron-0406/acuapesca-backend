@@ -24,7 +24,7 @@ const filterFotosProcess = async (req: any, file: any, cb: any) => {
   const mimetype = filetypes.test(file.mimetype);
   const extname = filetypes.test(path.extname(file.originalname));
   if (mimetype && extname) return cb(null, true);
-  cb("Archivo debe ser una foto.");
+  cb("Archivo debe ser una foto o pdf.");
 };
 
 // Middleware for files

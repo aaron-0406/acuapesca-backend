@@ -29,14 +29,14 @@ const isStored = async (req: Request, res: Response, next: NextFunction) => {
   if (!validationId.validation) return res.json({ error: `La id enviada no es válida` }).status(400);
   const idProcess = parseInt(id);
 
-  const process = await ClsProceso.getProccessById(idProcess);
+  const process = await ClsProceso.getProccessById(idProcess,`${req.user?.rango}`);
   if (!process) return res.json({ error: "No existe un proceso con esa id" }).status(400);
   req.body.process = process;
   next();
 };
 
 router.get("/", JWTAuth, checkRoles("Administrador", "Gestor"), getProcess);
-router.get("/:id", JWTAuth, checkRoles("Administrador"), isStored, getProcessById);
+router.get("/:id", JWTAuth, isStored, getProcessById);
 router.post("/", JWTAuth, checkRoles("Administrador"), validateData, createProcess);
 router.put("/:id", JWTAuth, checkRoles("Administrador"), validateData, isStored, editProcess);
 router.patch("/:id", JWTAuth, checkRoles("Administrador"), isStored, changeStatus);

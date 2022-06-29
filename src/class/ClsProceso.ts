@@ -43,9 +43,10 @@ class ClsProceso {
   /*
     Description: This method create a new process
     @param id: process's id
+    @param rango: user's rango
   */
-  async getProccessById(id: number): Promise<IProceso | undefined> {
-    const sql = "CALL `SP_GET_PROCESS_BY_ID`(?)";
+  async getProccessById(id: number,rango: string): Promise<IProceso | undefined> {
+    const sql = "CALL `SP_GET_PROCESS_BY_ID`(?,?)";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
     const proceso = data[0][0][0];
 

@@ -47,9 +47,9 @@ class ClsProcedure {
     Description: This method get all procedures by procedure's id
     @param id: procedure's id
   */
-  async getProcedureById(id: number): Promise<IProcedure | undefined> {
-    const sql = "CALL `SP_GET_PROCEDURE_BY_ID`(?)";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
+  async getProcedureById(id: number,rango: string): Promise<IProcedure | undefined> {
+    const sql = "CALL `SP_GET_PROCEDURE_BY_ID`(?,?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id,rango]);
     const procedure = data[0][0][0];
 
     // if there is not a procedure with that id
