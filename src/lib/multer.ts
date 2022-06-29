@@ -18,6 +18,14 @@ const filterFotos = async (req: any, file: any, cb: any) => {
   if (mimetype && extname) return cb(null, true);
   cb("Archivo debe ser una foto.");
 };
+// Filter photos
+const filterFotosProcess = async (req: any, file: any, cb: any) => {
+  const filetypes = /JPG|JPEG|jpg|jpeg|png|PNG|PDF|pdf/;
+  const mimetype = filetypes.test(file.mimetype);
+  const extname = filetypes.test(path.extname(file.originalname));
+  if (mimetype && extname) return cb(null, true);
+  cb("Archivo debe ser una foto.");
+};
 
 // Middleware for files
 const storageArchivos = multer.diskStorage({
@@ -43,4 +51,4 @@ const filterDocuments = async (req: any, file: any, cb: any) => {
 };
 export const fotosPerfil = multer({ storage: storageFotosPerfil, fileFilter: filterFotos });
 export const archivos = multer({ storage: storageArchivos, fileFilter: filterDocuments });
-export const fotoProcess = multer({ storage: storagePhotoProcess, fileFilter: filterFotos });
+export const fotoProcess = multer({ storage: storagePhotoProcess, fileFilter: filterFotosProcess });
