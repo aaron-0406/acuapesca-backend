@@ -73,7 +73,7 @@ const multerFile = (req: Request, res: Response, next: NextFunction) => {
 router.get("/:id", JWTAuth, checkRoles("Administrador", "Gestor", "Directivo"), getDocuments);
 router.get("/single/:code/:id", JWTAuth, checkRoles("Administrador", "Gestor", "Directivo"), getDocumentById);
 router.post("/", JWTAuth, checkRoles("Administrador"), multerFile, validateDataCreate, isStoredProcedure, isStoredUsers, createDocument);
-router.put("/:id", JWTAuth, checkRoles("Administrador"), multerFile, validateDataEdit, isStoredDocument, isStoredProcedure, isStoredUsers, editDocument);
+router.put("/:id", JWTAuth, checkRoles("Administrador"), multerFile, isStoredDocument, validateDataEdit, isStoredProcedure, isStoredUsers, editDocument);
 // router.delete("/:id", JWTAuth, checkRoles("Administrador"), isStoredDocument, deleteDocument);
 
 export default router;

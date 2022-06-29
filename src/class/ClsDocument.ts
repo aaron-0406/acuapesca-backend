@@ -24,8 +24,6 @@ class ClsDocument {
     if (status === undefined) return { message: "Falta el campo 'status'", validation: false };
     if (mode === "Create") {
       if (!req.file) return { message: "Falta el campo 'file'", validation: false };
-    } else {
-      if (!req.body.file) return { message: "Falta el campo 'file'", validation: false };
     }
     const validationTitle = ClsExpR.validarRequired(title);
     const validationVersion = ClsExpR.validarDigitos(version);
