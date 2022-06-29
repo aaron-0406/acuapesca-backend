@@ -16,7 +16,7 @@ export const createLog = async (req: Request, res: Response) => {
   try {
     // Request body
     const { document } = req.body;
-    await ClsLog.registerLog(document.id, parseInt(`${req.user?.id}`));
+    await ClsLog.registerLog(document.id, parseInt(`${req.user?.id}`), document.title);
     // Answer
     return res.json({ success: "Acción registrada" }).status(201);
   } catch (error: any) {

@@ -8,9 +8,9 @@ class ClsLog {
     return data[0][0];
   }
 
-  async registerLog(idDocument: number, idUser: number) {
-    const sql = "CALL `SP_CREATE_LOG`(?,?)";
-    await ClsBDConexion.conn.query(sql, [idUser,idDocument ]);
+  async registerLog(idDocument: number, idUser: number, title: string) {
+    const sql = "CALL `SP_CREATE_LOG`(?,?,?)";
+    await ClsBDConexion.conn.query(sql, [idUser, idDocument, title]);
   }
 }
 
