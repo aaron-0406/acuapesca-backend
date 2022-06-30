@@ -37,6 +37,10 @@ class ClsChat {
     message.status = status;
     return message;
   }
+  async updateReceived(idUser: number) {
+    const sql = `UPDATE Mensaje SET Estado = 2 WHERE Receptor_Id = ${idUser}`;
+    await ClsBDConexion.conn.query(sql);
+  }
 }
 
 export default new ClsChat();

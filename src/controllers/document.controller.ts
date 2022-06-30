@@ -47,8 +47,15 @@ export const getOnlyDocumentById = async (req: Request, res: Response) => {
     if (!validationCode.validation) return res.json({ error: `El id es requerido` });
 
     const document = await ClsDocument.getDocumentByIdAdmin(parseInt(id));
+
     if (!document) return res.json({ error: "No existe un documento con esa id" }).status(400);
+
+    const procedimiento = await ClsProcedure.getProcedureById(document.procedure_id, "Administrador");
+    console.log(procedimiento);
+    document.process_id = procedimiento?.process_id;
+    if (req.user?.rango === "Administrador") return res.json({ success: "Documento Encontrado", document });
     if (!document.permisos.includes(parseInt(`${req.user?.id}`))) return res.json({ error: "No tienes permisos de ver ese documento" }).status(400);
+
     return res.json({ success: "Documento Encontrado", document });
   } catch (error) {
     console.log(error);

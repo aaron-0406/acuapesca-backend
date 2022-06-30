@@ -30,6 +30,8 @@ class ClsSocket {
 
       log(chalk.bgBlack.green.bold(`Un usuario conectado ${user.name} ${user.id} ${socket.id}`));
 
+      this.updateReceived(user.id);
+
       // We add the user connected in this array
       ClsSocket.usersOnline.push({ id: user.id, name: user.name, socket_id: socket.id, status: "En línea" });
 
@@ -66,7 +68,11 @@ class ClsSocket {
       log(error);
     }
   }
-
+  async updateReceived(id: number) {
+    try {
+      await ClsChat.updateReceived(id);
+    } catch (error) {}
+  }
   disconnect(socket: Socket, user: any, io: Server) {
     this.removeFromArray(socket.id);
     log(chalk.bgBlack.red.bold(`${user.name} ${socket.id} disconnected`));
@@ -92,6 +98,8 @@ class ClsSocket {
   };
 }
 function chat(io: Server) {
-  io.on("connection", (socket: Socket) => new ClsSocket(io, socket));
+  io.on("connection", (socket: Socket) => {
+    new ClsSocket(io, socket);
+  });
 }
 export default chat;

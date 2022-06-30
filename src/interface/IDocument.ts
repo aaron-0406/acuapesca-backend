@@ -1,6 +1,6 @@
-import IUser from "./IUser";
 export default interface IDocument {
   id?: number;
+  process_id?: number;
   code: string;
   version: number;
   effective_date: string;
