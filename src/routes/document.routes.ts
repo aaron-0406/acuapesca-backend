@@ -70,8 +70,8 @@ const multerFile = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-router.get("/:id", JWTAuth, checkRoles("Administrador", "Gestor", "Directivo"), getDocuments);
-router.get("/single/:code/:id", JWTAuth, checkRoles("Administrador", "Gestor", "Directivo"), getDocumentById);
+router.get("/:id", JWTAuth, getDocuments);
+router.get("/single/:code/:id", JWTAuth, getDocumentById);
 router.get("/only/:id", JWTAuth, getOnlyDocumentById);
 router.post("/", JWTAuth, checkRoles("Administrador"), multerFile, validateDataCreate, isStoredProcedure, isStoredUsers, createDocument);
 router.put("/:id", JWTAuth, checkRoles("Administrador"), multerFile, isStoredDocument, validateDataEdit, isStoredProcedure, isStoredUsers, editDocument);

@@ -35,7 +35,7 @@ const isStored = async (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-router.get("/", JWTAuth, checkRoles("Administrador", "Gestor"), getProcess);
+router.get("/", JWTAuth, getProcess);
 router.get("/:id", JWTAuth, isStored, getProcessById);
 router.post("/", JWTAuth, checkRoles("Administrador"), validateData, createProcess);
 router.put("/:id", JWTAuth, checkRoles("Administrador"), validateData, isStored, editProcess);
