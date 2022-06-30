@@ -89,6 +89,11 @@ class ClsDocument {
     const sql = "CALL SP_GET_DOCUMENT_BY_ID_ADMIN(?)";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
     const document = data[0][0][0];
+    const newPermisos = [];
+    for (let i = 0; i < data[0][1].length; i++) {
+      const element = data[0][1][i].id;
+      newPermisos.push(element);
+    }
     if (!document) return undefined;
 
     const newDocument: IDocument = {
@@ -102,7 +107,7 @@ class ClsDocument {
       procedure_id: document.procedure_id,
       file: document.file,
       status: document.status == 1,
-      permisos: [],
+      permisos: newPermisos,
     };
     return newDocument;
   }

@@ -62,7 +62,9 @@ class ClsSocket {
       // When the user disconnect
       socket.on("disconnect", () => this.disconnect(socket, user, io));
       io.emit("server:sendUsers", ClsSocket.usersOnline);
-    } catch (error) {}
+    } catch (error) {
+      log(error);
+    }
   }
 
   disconnect(socket: Socket, user: any, io: Server) {
