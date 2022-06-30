@@ -47,7 +47,7 @@ class ClsProceso {
   */
   async getProccessById(id: number,rango: string): Promise<IProceso | undefined> {
     const sql = "CALL `SP_GET_PROCESS_BY_ID`(?,?)";
-    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id,rango]);
     const proceso = data[0][0][0];
 
     // In case there is not a process stored
