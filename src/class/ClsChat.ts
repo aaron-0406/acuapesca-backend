@@ -1,5 +1,6 @@
 import moment from "moment";
 import { FieldPacket, RowDataPacket } from "mysql2";
+import { IContact } from "../interface/IContact";
 import IMessage from "../interface/IMessage";
 import ClsBDConexion from "./ClsBDConexion";
 
@@ -9,19 +10,31 @@ class ClsChat {
   async getContacts(id: number) {
     const sql = "CALL `SP_GET_CONTACTS`(?)";
     const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [id]);
-    let users = data[0][0];
-    const messages = data[0][1];
-    users = users.map((user) => {
-      user.messages = [];
-      messages.forEach((message) => {
-        if ((message.id_emisor === user.id && message.id_receptor === id) || (message.id_receptor === user.id && message.id_emisor === id)) {
-          user.messages.push(message);
-        }
-      });
-      return user;
+    let users: IContact[] = data[0][0] as IContact[];
+    users.map((item) => {
+      return (item.messages = []);
     });
+    for (let i = 0; i < users.length; i++) {
+      const dataMessages: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query("CALL `SP_GET_MESSAGES`(?,?)", [id, users[i].id]);
+      users[i].messages = dataMessages[0][0] as IMessage[];
+      users[i].messages.sort((a, b) => {
+        return parseInt(`${a.id}`) - parseInt(`${b.id}`);
+      });
+    }
+
     return users;
   }
+
+  async getMessagesByPage(idUser: number, idContact: number, idMessage: number) {
+    const sql = "CALL `SP_GET_MESSAGES_BY_PAGE`(?,?,?)";
+    const data: [RowDataPacket[][], FieldPacket[]] = await ClsBDConexion.conn.query(sql, [idUser, idContact, idMessage]);
+    const messages = data[0][0] as IMessage[];
+    messages.sort((a, b) => {
+      return parseInt(`${a.id}`) - parseInt(`${b.id}`);
+    });
+    return data[0][0];
+  }
+
   async createMessage(message: IMessage) {
     const { id_emisor, id_receptor, text, status } = message;
     const sql = "CALL `SP_INSERT_MESSAGE`(?,?,?,?,?); SELECT @id AS 'message_id'";

@@ -13,11 +13,14 @@ export const getContacts = async (req: Request, res: Response) => {
     return res.json({ error: "Ocurrió un error, intentelo más tarde" }).status(500);
   }
 };
-
-export default (io: Server) => {
-  const sendMessage = function (payload: any) {
-    const socket = io;
-
-    // ...
-  };
+export const getMessages = async (req: Request, res: Response) => {
+  try {
+    // Getting users in database
+    const { idContact, idMessage } = req.body;
+    const messages = await ClsChat.getMessagesByPage(parseInt(`${req.user?.id}`), parseInt(`${idContact}`), parseInt(`${idMessage}`));
+    return res.json({ messages, success: "Datos obtenidos" }).status(200);
+  } catch (error) {
+    console.log(error);
+    return res.json({ error: "Ocurrió un error, intentelo más tarde" }).status(500);
+  }
 };
