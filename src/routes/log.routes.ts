@@ -11,7 +11,7 @@ const isDocumentStored = async (req: Request, res: Response, next: NextFunction)
   const { documento_id } = req.body;
 
   // In case they didn't send the id
-  if (!documento_id) return res.json({ error: "No ha enviado el campo id" }).status(400);
+  if (documento_id === undefined) return res.json({ error: "No ha enviado el campo id" }).status(400);
 
   // In case is not a number
   const validationId = ClsExpR.validarDigitos(documento_id);
