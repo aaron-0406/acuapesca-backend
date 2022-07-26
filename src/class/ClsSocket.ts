@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import chalk from "chalk";
 import jwt from "jsonwebtoken";
-import IMessage from "src/interface/IMessage";
+import IMessage from "../interface/IMessage";
 import ClsChat from "./ClsChat";
 
 const log = console.log;
@@ -71,7 +71,7 @@ class ClsSocket {
   async updateReceived(id: number) {
     try {
       await ClsChat.updateReceived(id);
-    } catch (error) {}
+    } catch (error) { }
   }
   disconnect(socket: Socket, user: any, io: Server) {
     this.removeFromArray(socket.id);
